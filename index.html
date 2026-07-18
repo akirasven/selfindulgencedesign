@@ -111,28 +111,27 @@
   .enter-btn{
     appearance:none;
     background:transparent;
-    border:1px solid var(--line);
+    border:none;
     color:var(--ink);
-    font-family:inherit;
-    font-size:11px;
-    letter-spacing:0.24em;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:20px;
+    letter-spacing:0.12em;
     text-transform:uppercase;
     text-decoration:none;
-    padding:14px 34px;
+    padding:6px 0;
     display:inline-block;
     cursor:pointer;
-    transition: background 0.35s ease, color 0.35s ease;
+    transition: opacity 0.35s ease;
   }
 
   .enter-btn:hover,
   .enter-btn:focus-visible{
-    background:var(--ink);
-    color:var(--bg);
+    opacity:0.6;
   }
 
   .enter-btn:focus-visible{
     outline:2px solid var(--ink);
-    outline-offset:3px;
+    outline-offset:4px;
   }
 
   @keyframes fadeIn{
@@ -150,7 +149,7 @@
   <div class="splash">
 
     <div class="logo">
-      <img src="assets/logo.jpg" alt="Self Indulgence Design">
+      <img src="logo.jpg" alt="Self Indulgence Design">
     </div>
 
     <!--
