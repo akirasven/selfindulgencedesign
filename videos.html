@@ -33,10 +33,25 @@
     border-bottom:1px solid #eee2e2;
   }
 
-  .site-header video{
+  .site-header canvas{
     height:56px;
     width:auto;
     display:block;
+  }
+
+  .logo-link{
+    display:block;
+    line-height:0;
+    text-decoration:none;
+  }
+
+  .visually-hidden-video{
+    position:absolute;
+    width:1px;
+    height:1px;
+    overflow:hidden;
+    opacity:0;
+    pointer-events:none;
   }
 
   .site-nav{
@@ -82,10 +97,12 @@
 </head>
 <body>
   <header class="site-header">
-    <video autoplay muted loop playsinline>
-      <source src="header-logo.webm" type="video/webm">
-      <source src="header-logo-safari.mov" type="video/quicktime">
+    <video id="logoVideo" class="visually-hidden-video" muted loop autoplay playsinline>
+      <source src="header-logo-chroma.mp4" type="video/mp4">
     </video>
+    <a href="site.html" class="logo-link" aria-label="Return to home page">
+      <canvas id="logoCanvas" width="162" height="120"></canvas>
+    </a>
     <nav class="site-nav">
       <a href="models.html">Models</a>
       <a href="videos.html">Videos</a>
@@ -96,5 +113,31 @@
   <main>
     <p>Coming Soon</p>
   </main>
+  <script>
+    (function(){
+      var video = document.getElementById('logoVideo');
+      var canvas = document.getElementById('logoCanvas');
+      var ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+      function drawFrame(){
+        if (!video.paused && !video.ended){
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          var frame = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          var data = frame.data;
+          for (var i = 0; i < data.length; i += 4){
+            var r = data[i], g = data[i+1], b = data[i+2];
+            if (g > 85 && g > r * 1.3 && g > b * 1.3){
+              data[i+3] = 0;
+            }
+          }
+          ctx.putImageData(frame, 0, 0);
+        }
+        requestAnimationFrame(drawFrame);
+      }
+
+      video.play().catch(function(){});
+      requestAnimationFrame(drawFrame);
+    })();
+  </script>
 </body>
 </html>
