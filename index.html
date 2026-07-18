@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self Indulgence Design</title>
+<meta name="description" content="Self Indulgence Design — custom surfboards.">
+<style>
+  :root{
+    --bg:#ffffff;
+    --ink:#6e1414;
+    --gray:#9a8080;
+    --line:#6e1414;
+  }
+
+  *{ margin:0; padding:0; box-sizing:border-box; }
+
+  html,body{
+    height:100%;
+    background:var(--bg);
+    color:var(--ink);
+    font-family: "Times New Roman", Times, Georgia, serif;
+  }
+
+  .splash{
+    position:relative;
+    width:100%;
+    min-height:100dvh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:clamp(28px, 5vh, 56px);
+    padding:clamp(28px, 6vh, 64px) 24px;
+  }
+
+  /* ---- logo ---- */
+  .logo{
+    font-size:clamp(22px, 3.6vw, 32px);
+    letter-spacing:0.08em;
+    font-weight:400;
+    text-align:center;
+    text-transform:uppercase;
+    line-height:1.15;
+    opacity:0;
+    animation: fadeIn 1.2s ease forwards 0.1s;
+  }
+
+  .logo small{
+    display:block;
+    font-size:10px;
+    letter-spacing:0.3em;
+    color:var(--gray);
+    margin-top:12px;
+    font-weight:300;
+  }
+
+  /* if using an image logo instead of text, drop it in like this: */
+  .logo img{
+    max-width:min(70vw, 460px);
+    height:auto;
+    display:block;
+    margin:0 auto;
+  }
+
+  /* ---- video frame ---- */
+  .video-frame{
+    position:relative;
+    width:min(92vw, 720px);
+    aspect-ratio:16/9;
+    background:#f2f1ee;
+    overflow:hidden;
+    opacity:0;
+    animation: fadeIn 1.4s ease forwards 0.4s;
+  }
+
+  .video-frame iframe{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    border:0;
+    pointer-events:none; /* ambient — the Enter Site button is the only control on this page */
+  }
+
+  .video-placeholder{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:repeating-linear-gradient(115deg, #f2f1ee 0 2px, #e9e7e1 2px 4px);
+  }
+
+  .video-placeholder span{
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gray);
+    max-width:260px;
+    line-height:1.6;
+  }
+
+  /* ---- enter button ---- */
+  .enter-wrap{
+    opacity:0;
+    animation: fadeIn 1.2s ease forwards 0.9s;
+  }
+
+  .enter-btn{
+    appearance:none;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:11px;
+    letter-spacing:0.24em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:14px 34px;
+    display:inline-block;
+    cursor:pointer;
+    transition: background 0.35s ease, color 0.35s ease;
+  }
+
+  .enter-btn:hover,
+  .enter-btn:focus-visible{
+    background:var(--ink);
+    color:var(--bg);
+  }
+
+  .enter-btn:focus-visible{
+    outline:2px solid var(--ink);
+    outline-offset:3px;
+  }
+
+  @keyframes fadeIn{
+    from{ opacity:0; transform:translateY(6px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .logo, .video-frame, .enter-wrap{ animation:none; opacity:1; transform:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="splash">
+
+    <div class="logo">
+      <img src="assets/logo.jpg" alt="Self Indulgence Design">
+    </div>
+
+    <!--
+      Embedded YouTube video, muted + looping so it behaves like a background clip.
+      pointer-events is off on the iframe on purpose — this is meant to be ambient,
+      not a control surface, so nothing steals focus from "Enter Site".
+      Swap the video ID below (currently IZ3QvrsQHTo) any time you want a different clip.
+    -->
+    <div class="video-frame">
+      <iframe
+        src="https://www.youtube-nocookie.com/embed/IZ3QvrsQHTo?autoplay=1&mute=1&loop=1&playlist=IZ3QvrsQHTo&controls=0&modestbranding=1&rel=0&playsinline=1&showinfo=0"
+        title="Self Indulgence Design"
+        allow="autoplay; encrypted-media"
+        loading="lazy">
+      </iframe>
+    </div>
+
+    <div class="enter-wrap">
+      <a class="enter-btn" href="site.html">Enter Site</a>
+    </div>
+
+  </div>
+
+</body>
+</html>
