@@ -51,7 +51,6 @@
       height:110px;
     }
     main{
-      padding-top:270px;
       align-items:center;
     }
   }
@@ -102,7 +101,7 @@
     align-items:flex-start;
     justify-content:center;
     text-align:center;
-    padding:120px 24px 24px; /* top padding clears the fixed header + nav */
+    padding:24px 24px 24px; /* top padding is set dynamically by JS to match the actual header height */
   }
 
   h1{
@@ -135,7 +134,7 @@
 </style>
 </head>
 <body>
-  <header class="site-header">
+  <header class="site-header" id="siteHeader">
     <video id="logoVideo" class="visually-hidden-video" muted loop autoplay playsinline>
       <source src="header-logo-chroma.mp4" type="video/mp4">
     </video>
@@ -164,6 +163,23 @@
       </div>
     </div>
   </main>
+
+  <script>
+    (function(){
+      var header = document.getElementById('siteHeader');
+      var main = document.querySelector('main');
+
+      function adjustSpacing(){
+        main.style.paddingTop = (header.offsetHeight + 24) + 'px';
+      }
+
+      adjustSpacing();
+      window.addEventListener('resize', adjustSpacing);
+      window.addEventListener('load', adjustSpacing);
+      // header height can change slightly once fonts/logo finish rendering
+      setTimeout(adjustSpacing, 300);
+    })();
+  </script>
 
   <script>
     (function(){
