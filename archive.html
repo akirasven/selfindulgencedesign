@@ -260,7 +260,6 @@
 
   <main>
     <div class="gallery" id="gallery"></div>
-    <div class="gallery-sentinel" id="gallerySentinel"></div>
   </main>
 
   <button id="backToTop" class="back-to-top" aria-label="Back to top">
@@ -305,7 +304,6 @@
 
     (function(){
       var gallery = document.getElementById('gallery');
-      var sentinel = document.getElementById('gallerySentinel');
 
       function appendBatch(){
         PHOTOS.forEach(function(photo, i){
@@ -334,19 +332,8 @@
         });
       }
 
-      // load a couple of batches up front so there's room to scroll
+      // render the full set once — no repeating/looping
       appendBatch();
-      appendBatch();
-
-      var observer = new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
-          if (entry.isIntersecting){
-            appendBatch();
-          }
-        });
-      }, { rootMargin: '600px' });
-
-      observer.observe(sentinel);
 
       // ---- lightbox ----
       var lightbox = document.getElementById('lightbox');
