@@ -211,14 +211,13 @@
 
   <main>
     <div class="order-wrap">
-      <h1>Start a Custom Order</h1>
-      <p>Tell us about the board you're after — we'll follow up by email.</p>
+      <h1>Order Now</h1>
 
       <!--
         REPLACE THE FORM ACTION BELOW with your real Formspree endpoint
         once you've created a form at formspree.io (e.g. https://formspree.io/f/xxxxxxxx)
       -->
-      <form action="https://formspree.io/f/xkodrlvz" method="POST">
+      <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST">
         <label>
           Name
           <input type="text" name="name" required>
@@ -229,32 +228,117 @@
           <input type="email" name="email" required>
         </label>
 
-        <div class="row">
-          <label>
-            Board Length
-            <input type="text" name="length" placeholder="e.g. 7'6&quot;">
-          </label>
-          <label>
-            Rider Height / Weight
-            <input type="text" name="rider_stats" placeholder="e.g. 5'10&quot;, 165 lb">
-          </label>
-        </div>
-
         <label>
           Board Style
           <select name="style">
             <option value="">Select one</option>
-            <option value="Longboard">Longboard</option>
-            <option value="Mid-length / Egg">Mid-length / Egg</option>
-            <option value="Shortboard">Shortboard</option>
-            <option value="Fish">Fish</option>
-            <option value="Not sure yet">Not sure yet</option>
+            <option value="Jazzpunk">Jazzpunk</option>
+            <option value="PunkStyleLove">PunkStyleLove</option>
+            <option value="ONI">ONI</option>
+            <option value="SiDFicious">SiDFicious</option>
           </select>
         </label>
 
+        <div class="row">
+          <label>
+            Board Size
+            <input type="text" name="length" placeholder="e.g. 7'6&quot;">
+          </label>
+          <label>
+            Width
+            <select name="width">
+              <option value="">Select one</option>
+          <option value="16.00">16.00"</option>
+          <option value="16.25">16.25"</option>
+          <option value="16.50">16.50"</option>
+          <option value="16.75">16.75"</option>
+          <option value="17.00">17.00"</option>
+          <option value="17.25">17.25"</option>
+          <option value="17.50">17.50"</option>
+          <option value="17.75">17.75"</option>
+          <option value="18.00">18.00"</option>
+          <option value="18.25">18.25"</option>
+          <option value="18.50">18.50"</option>
+          <option value="18.75">18.75"</option>
+          <option value="19.00">19.00"</option>
+          <option value="19.25">19.25"</option>
+          <option value="19.50">19.50"</option>
+          <option value="19.75">19.75"</option>
+          <option value="20.00">20.00"</option>
+          <option value="20.25">20.25"</option>
+          <option value="20.50">20.50"</option>
+          <option value="20.75">20.75"</option>
+          <option value="21.00">21.00"</option>
+          <option value="21.25">21.25"</option>
+          <option value="21.50">21.50"</option>
+          <option value="21.75">21.75"</option>
+          <option value="22.00">22.00"</option>
+          <option value="22.25">22.25"</option>
+          <option value="22.50">22.50"</option>
+          <option value="22.75">22.75"</option>
+          <option value="23.00">23.00"</option>
+          <option value="23.25">23.25"</option>
+          <option value="23.50">23.50"</option>
+          <option value="23.75">23.75"</option>
+          <option value="24.00">24.00"</option>
+          <option value="24.25">24.25"</option>
+          <option value="24.50">24.50"</option>
+          <option value="24.75">24.75"</option>
+          <option value="25.00">25.00"</option>
+          <option value="25.25">25.25"</option>
+          <option value="25.50">25.50"</option>
+          <option value="25.75">25.75"</option>
+          <option value="26.00">26.00"</option>
+          <option value="26.25">26.25"</option>
+          <option value="26.50">26.50"</option>
+          <option value="26.75">26.75"</option>
+          <option value="27.00">27.00"</option>
+          <option value="27.25">27.25"</option>
+          <option value="27.50">27.50"</option>
+          <option value="27.75">27.75"</option>
+          <option value="28.00">28.00"</option>
+          <option value="28.25">28.25"</option>
+          <option value="28.50">28.50"</option>
+          <option value="28.75">28.75"</option>
+          <option value="29.00">29.00"</option>
+          <option value="29.25">29.25"</option>
+          <option value="29.50">29.50"</option>
+          <option value="29.75">29.75"</option>
+          <option value="30.00">30.00"</option>
+            </select>
+          </label>
+          <label>
+            Thickness
+            <select name="thickness">
+              <option value="">Select one</option>
+          <option value="2.00">2.00"</option>
+          <option value="2.10">2.10"</option>
+          <option value="2.20">2.20"</option>
+          <option value="2.30">2.30"</option>
+          <option value="2.40">2.40"</option>
+          <option value="2.50">2.50"</option>
+          <option value="2.60">2.60"</option>
+          <option value="2.70">2.70"</option>
+          <option value="2.80">2.80"</option>
+          <option value="2.90">2.90"</option>
+          <option value="3.00">3.00"</option>
+          <option value="3.10">3.10"</option>
+          <option value="3.20">3.20"</option>
+          <option value="3.30">3.30"</option>
+          <option value="3.40">3.40"</option>
+          <option value="3.50">3.50"</option>
+          <option value="3.60">3.60"</option>
+          <option value="3.70">3.70"</option>
+          <option value="3.80">3.80"</option>
+          <option value="3.90">3.90"</option>
+          <option value="4.00">4.00"</option>
+            </select>
+          </label>
+        </div>
+
         <label>
-          Tell us more
-          <textarea name="message" placeholder="Where you usually surf, wave conditions, timeline, anything else that helps us shape the right board."></textarea>
+          Notes to the Shaper
+          <textarea name="message"></textarea>
         </label>
 
         <button type="submit">Send Inquiry</button>
