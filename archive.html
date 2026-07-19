@@ -91,17 +91,154 @@
     flex:1;
     width:100%;
     display:flex;
+    flex-direction:column;
     align-items:center;
-    justify-content:center;
-    text-align:center;
     padding:150px 24px 24px;
   }
 
-  p{
-    font-size:14px;
-    letter-spacing:0.18em;
+  @media (min-width: 768px){
+    main{
+      padding-left:24px;
+      padding-right:24px;
+    }
+  }
+
+  .gallery{
+    width:100%;
+    max-width:640px;
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:10px;
+    padding-bottom:80px;
+  }
+
+  .gallery figure{
+    width:100%;
+    margin:0;
+  }
+
+  .gallery img{
+    display:block;
+    width:100%;
+    height:auto;
+    cursor:pointer;
+  }
+
+  .gallery .placeholder-photo{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    background:repeating-linear-gradient(115deg, #f7f0f0 0 2px, #efe4e4 2px 4px);
+    border:1px solid #eee2e2;
+  }
+
+  .gallery .placeholder-photo span{
+    font-size:10px;
+    letter-spacing:0.1em;
     text-transform:uppercase;
-    color:#6e1414;
+    color:#9a8080;
+    max-width:120px;
+    line-height:1.5;
+  }
+
+  .aspect-tall{ aspect-ratio: 3/4; }
+  .aspect-wide{ aspect-ratio: 4/3; }
+  .aspect-square{ aspect-ratio: 1/1; }
+
+  .gallery-sentinel{
+    height:1px;
+  }
+
+  /* ---- back to top button ---- */
+  .back-to-top{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    width:40px;
+    height:40px;
+    padding:0;
+    border:none;
+    background:transparent;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.3s ease;
+    z-index:20;
+  }
+
+  .back-to-top svg{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+
+  .back-to-top.visible{
+    opacity:1;
+    pointer-events:auto;
+  }
+
+  .back-to-top:hover,
+  .back-to-top:focus-visible{
+    opacity:0.6;
+  }
+
+  /* ---- lightbox ---- */
+  .lightbox{
+    position:fixed;
+    inset:0;
+    background:rgba(10,10,10,0.94);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+  }
+
+  .lightbox[hidden]{
+    display:none;
+  }
+
+  .lightbox img{
+    max-width:88vw;
+    max-height:82vh;
+    display:block;
+  }
+
+  .lightbox-close,
+  .lightbox-nav{
+    position:fixed;
+    appearance:none;
+    background:transparent;
+    border:none;
+    color:#f5f0ee;
+    cursor:pointer;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    transition:opacity 0.3s ease;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-nav:hover{
+    opacity:0.6;
+  }
+
+  .lightbox-close{
+    top:20px;
+    right:24px;
+    font-size:32px;
+  }
+
+  .lightbox-nav{
+    top:50%;
+    transform:translateY(-50%);
+    font-size:48px;
+    padding:10px 16px;
+  }
+
+  .lightbox-prev{ left:8px; }
+  .lightbox-next{ right:8px; }
+
+  @media (max-width:480px){
+    .lightbox-nav{ font-size:36px; padding:6px 10px; }
   }
 </style>
 </head>
@@ -122,8 +259,147 @@
   </header>
 
   <main>
-    <p>Coming Soon</p>
+    <div class="gallery" id="gallery"></div>
+    <div class="gallery-sentinel" id="gallerySentinel"></div>
   </main>
+
+  <button id="backToTop" class="back-to-top" aria-label="Back to top">
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="50.00,8.00 40.57,37.02 10.06,37.02 34.74,54.96 25.31,83.98 50.00,66.04 74.69,83.98 65.26,54.96 89.94,37.02 59.43,37.02"
+        fill="#ffffff" stroke="#111110" stroke-width="4" stroke-linejoin="round"/>
+    </svg>
+  </button>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous photo">&#8249;</button>
+    <img id="lightboxImg" src="" alt="Self Indulgence Design archive photo, enlarged">
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
+  </div>
+
+  <script>
+    /*
+      ARCHIVE PHOTOS
+      ----------------------------------------------------
+      Replace this list with your real photos once you have them.
+      Each entry needs a file path (put images in an "archive" folder
+      next to this HTML file) and an aspect ratio class that controls
+      the placeholder shape: "aspect-tall", "aspect-wide", or "aspect-square".
+
+      Example once you have real files:
+      { src: "archive/board-01.jpg", aspect: "aspect-tall" }
+
+      Until then, this renders placeholder blocks so you can see the
+      scrolling layout in action.
+    */
+    var PHOTOS = [
+      { src: null, aspect: "aspect-tall" },
+      { src: null, aspect: "aspect-wide" },
+      { src: null, aspect: "aspect-square" },
+      { src: null, aspect: "aspect-tall" },
+      { src: null, aspect: "aspect-wide" },
+      { src: null, aspect: "aspect-square" }
+    ];
+
+    (function(){
+      var gallery = document.getElementById('gallery');
+      var sentinel = document.getElementById('gallerySentinel');
+
+      function appendBatch(){
+        PHOTOS.forEach(function(photo, i){
+          var figure = document.createElement('figure');
+
+          if (photo.src){
+            var img = document.createElement('img');
+            img.src = photo.src;
+            img.alt = 'Self Indulgence Design archive photo';
+            img.loading = 'lazy';
+            img.dataset.photoIndex = i; // index into PHOTOS, used by the lightbox
+            img.addEventListener('click', function(){
+              openLightbox(i);
+            });
+            figure.appendChild(img);
+          } else {
+            var div = document.createElement('div');
+            div.className = 'placeholder-photo ' + photo.aspect;
+            var span = document.createElement('span');
+            span.textContent = 'Photo placeholder — add real images to the PHOTOS list';
+            div.appendChild(span);
+            figure.appendChild(div);
+          }
+
+          gallery.appendChild(figure);
+        });
+      }
+
+      // load a couple of batches up front so there's room to scroll
+      appendBatch();
+      appendBatch();
+
+      var observer = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting){
+            appendBatch();
+          }
+        });
+      }, { rootMargin: '600px' });
+
+      observer.observe(sentinel);
+
+      // ---- lightbox ----
+      var lightbox = document.getElementById('lightbox');
+      var lightboxImg = document.getElementById('lightboxImg');
+      var currentIndex = 0;
+
+      function openLightbox(index){
+        currentIndex = index;
+        lightboxImg.src = PHOTOS[currentIndex].src;
+        lightbox.hidden = false;
+      }
+
+      function closeLightbox(){
+        lightbox.hidden = true;
+        lightboxImg.src = '';
+      }
+
+      function showPhoto(step){
+        // loop through the PHOTOS list in either direction
+        currentIndex = (currentIndex + step + PHOTOS.length) % PHOTOS.length;
+        lightboxImg.src = PHOTOS[currentIndex].src;
+      }
+
+      document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+      document.getElementById('lightboxPrev').addEventListener('click', function(){ showPhoto(-1); });
+      document.getElementById('lightboxNext').addEventListener('click', function(){ showPhoto(1); });
+
+      lightbox.addEventListener('click', function(e){
+        if (e.target === lightbox){ closeLightbox(); }
+      });
+
+      document.addEventListener('keydown', function(e){
+        if (lightbox.hidden) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') showPhoto(-1);
+        if (e.key === 'ArrowRight') showPhoto(1);
+      });
+
+      // ---- back to top ----
+      var backToTop = document.getElementById('backToTop');
+
+      window.addEventListener('scroll', function(){
+        if (window.scrollY > 400){
+          backToTop.classList.add('visible');
+        } else {
+          backToTop.classList.remove('visible');
+        }
+      });
+
+      backToTop.addEventListener('click', function(){
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    })();
+  </script>
+
   <script>
     (function(){
       var video = document.getElementById('logoVideo');
