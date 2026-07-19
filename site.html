@@ -101,17 +101,30 @@
 
   h1{
     font-size:clamp(28px, 5vw, 48px);
-    font-weight:400;
+    font-weight:700;
     letter-spacing:0.06em;
     text-transform:uppercase;
     line-height:1.2;
   }
   p{
     margin-top:16px;
-    font-size:14px;
-    letter-spacing:0.18em;
-    text-transform:uppercase;
-    color:#9a8080;
+    font-size:20px;
+    font-style:italic;
+    font-weight:700;
+    letter-spacing:0.04em;
+    color:#6e1414;
+  }
+
+  .yt-frame{
+    margin:32px auto 0;
+    width:min(92vw, 720px);
+    aspect-ratio:16/9;
+  }
+
+  .yt-frame iframe{
+    width:100%;
+    height:100%;
+    border:0;
   }
 </style>
 </head>
@@ -133,7 +146,15 @@
   <main>
     <div>
       <h1>Self Indulgence Design</h1>
-      <p>Website coming soon</p>
+      <p>Pretty On The Inside</p>
+      <div class="yt-frame">
+        <iframe
+          src="https://www.youtube-nocookie.com/embed/IZ3QvrsQHTo"
+          title="Self Indulgence Design"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen>
+        </iframe>
+      </div>
     </div>
   </main>
 
