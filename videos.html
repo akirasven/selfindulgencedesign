@@ -92,151 +92,75 @@
   main{
     flex:1;
     width:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:24px 24px 100px;
   }
 
-  /* ---- channel scroll track ---- */
-  .channel-track{
-    position:relative;
+  .video-list{
     width:100%;
+    max-width:720px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:100px;
   }
 
-  .tv-sticky-wrap{
-    position:sticky;
+  .video-block{
     width:100%;
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center;
-    gap:18px;
+    text-align:center;
   }
 
-  .channel-marker{
-    width:100%;
-  }
-
-  .scroll-hint{
-    font-size:12px;
-    letter-spacing:0.18em;
+  .video-title{
+    font-size:clamp(18px, 3vw, 24px);
+    font-weight:700;
+    letter-spacing:0.05em;
     text-transform:uppercase;
+    color:#6e1414;
+  }
+
+  .video-year{
+    margin-top:6px;
+    font-size:13px;
+    letter-spacing:0.16em;
     color:#9a8080;
   }
 
-  /* ---- the TV itself ---- */
-  .tv{
-    position:relative;
-    width:min(86vw, 480px);
-  }
-
-  .tv-body{
-    position:relative;
-    background:linear-gradient(155deg, #e2e3e5 0%, #c3c5c8 55%, #a9abae 100%);
-    border-radius:10px;
-    padding:22px 22px 0;
-    box-shadow:
-      0 20px 40px rgba(0,0,0,0.22),
-      inset 0 1px 0 rgba(255,255,255,0.5);
-  }
-
-  .tv-channel-label{
-    position:absolute;
-    top:34px;
-    left:34px;
-    z-index:2;
-    font-size:13px;
-    letter-spacing:0.12em;
-    color:#e8e4e0;
-    background:rgba(0,0,0,0.4);
-    padding:3px 8px;
-    border-radius:3px;
-  }
-
-  .tv-screen{
-    position:relative;
+  .yt-frame{
+    margin-top:22px;
     width:100%;
-    aspect-ratio:4/3;
-    background:#333335;
-    border-radius:4px;
-    overflow:hidden;
-    box-shadow:
-      inset 0 0 0 2px #050505,
-      inset 0 6px 14px rgba(0,0,0,0.5);
+    aspect-ratio:16/9;
   }
 
-  .tv-screen iframe{
+  .yt-frame iframe{
     width:100%;
     height:100%;
     border:0;
   }
 
-  .tv-screen .scanlines{
-    position:absolute;
-    inset:0;
-    background:repeating-linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.035) 0px,
-      rgba(255,255,255,0.035) 1px,
-      transparent 1px,
-      transparent 3px
-    );
-    pointer-events:none;
-  }
-
-  .tv-placeholder{
-    position:absolute;
-    inset:0;
+  .video-placeholder{
+    margin-top:22px;
+    width:100%;
+    aspect-ratio:16/9;
     display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
-    background:repeating-linear-gradient(115deg, #3a3535 0 2px, #2a2626 2px 4px);
+    background:repeating-linear-gradient(115deg, #f7f0f0 0 2px, #efe4e4 2px 4px);
+    border:1px solid #eee2e2;
   }
 
-  .tv-placeholder span{
+  .video-placeholder span{
     font-size:11px;
     letter-spacing:0.12em;
     text-transform:uppercase;
-    color:#c9baba;
-    max-width:220px;
+    color:#9a8080;
+    max-width:240px;
     line-height:1.6;
-  }
-
-  /* ---- control strip below the screen ---- */
-  .tv-controls{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    gap:16px;
-    padding:14px 12px;
-  }
-
-  .tv-controls .grille{
-    flex:1;
-    height:14px;
-    background:repeating-linear-gradient(
-      to right,
-      #6d6f72 0px, #6d6f72 2px,
-      #8c8e91 2px, #8c8e91 5px
-    );
-    border-radius:2px;
-    opacity:0.9;
-  }
-
-  .tv-controls .led{
-    width:7px;
-    height:7px;
-    border-radius:50%;
-    background:#8a1f1f;
-    box-shadow:0 0 4px rgba(200,40,40,0.7);
-    flex-shrink:0;
-  }
-
-  .tv-controls .knob{
-    width:13px;
-    height:13px;
-    border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, #f2f2f3, #8a8c8f 75%);
-    flex-shrink:0;
-    box-shadow:0 1px 2px rgba(0,0,0,0.3);
   }
 </style>
 </head>
@@ -257,107 +181,71 @@
   </header>
 
   <main>
-    <div class="channel-track" id="channelTrack">
-      <div class="tv-sticky-wrap" id="tvStickyWrap">
-        <div class="tv">
-          <div class="tv-body">
-            <div class="tv-channel-label" id="channelLabel">CH. 01</div>
-            <div class="tv-screen" id="tvScreen"></div>
-            <div class="tv-controls">
-              <div class="grille"></div>
-              <span class="led"></span>
-              <span class="knob"></span>
-              <span class="knob"></span>
-            </div>
-          </div>
-        </div>
-        <p class="scroll-hint">Scroll to change the channel</p>
-      </div>
-
-      <!-- invisible scroll markers, one per channel, drive which video shows in the TV above -->
-      <div class="channel-marker" data-channel="0"></div>
-      <div class="channel-marker" data-channel="1"></div>
-      <div class="channel-marker" data-channel="2"></div>
-      <div class="channel-marker" data-channel="3"></div>
-    </div>
+    <div class="video-list" id="videoList"></div>
   </main>
 
   <script>
     /*
-      CHANNELS
+      VIDEOS
       ----------------------------------------------------
-      Replace videoId with a real YouTube video ID once you have one
-      (the part after "v=" or after "youtu.be/" in a YouTube URL).
-      Example: videoId: "IZ3QvrsQHTo"
-      Leave as null to keep showing the placeholder screen.
+      Add or reorder entries here. Each needs a title, a year, and a
+      YouTube video ID (the part after "v=" or after "youtu.be/" in a
+      YouTube link). Leave videoId as null to show a placeholder instead.
     */
-    var CHANNELS = [
-      { label: "CH. 01", videoId: "IZ3QvrsQHTo" },
-      { label: "CH. 02", videoId: "n1Lzcj-j9qo" },
-      { label: "CH. 03", videoId: null },
-      { label: "CH. 04", videoId: null }
+    var VIDEOS = [
+      { title: "Pretty On The Inside", year: "2025", videoId: "IZ3QvrsQHTo" },
+      { title: "PunkStyleLove", year: "2026", videoId: "n1Lzcj-j9qo" }
     ];
 
     (function(){
-      var header = document.getElementById('siteHeader');
-      var track = document.getElementById('channelTrack');
-      var stickyWrap = document.getElementById('tvStickyWrap');
-      var screen = document.getElementById('tvScreen');
-      var channelLabel = document.getElementById('channelLabel');
-      var markers = document.querySelectorAll('.channel-marker');
+      var list = document.getElementById('videoList');
 
-      var currentIndex = -1;
+      VIDEOS.forEach(function(video){
+        var block = document.createElement('div');
+        block.className = 'video-block';
 
-      function renderChannel(index){
-        if (index === currentIndex) return;
-        currentIndex = index;
-        var channel = CHANNELS[index];
-        channelLabel.textContent = channel.label;
+        var title = document.createElement('div');
+        title.className = 'video-title';
+        title.textContent = video.title;
 
-        if (channel.videoId){
-          screen.innerHTML =
-            '<iframe src="https://www.youtube-nocookie.com/embed/' + channel.videoId +
-            '" title="' + channel.label + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+        var year = document.createElement('div');
+        year.className = 'video-year';
+        year.textContent = video.year;
+
+        block.appendChild(title);
+        block.appendChild(year);
+
+        if (video.videoId){
+          var frame = document.createElement('div');
+          frame.className = 'yt-frame';
+          frame.innerHTML =
+            '<iframe src="https://www.youtube-nocookie.com/embed/' + video.videoId +
+            '" title="' + video.title + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>';
+          block.appendChild(frame);
         } else {
-          screen.innerHTML =
-            '<div class="tv-placeholder"><span>' + channel.label + ' — add a YouTube video ID above to fill this channel</span></div>' +
-            '<div class="scanlines"></div>';
+          var placeholder = document.createElement('div');
+          placeholder.className = 'video-placeholder';
+          placeholder.innerHTML = '<span>Add a YouTube video ID to fill this in</span>';
+          block.appendChild(placeholder);
         }
-      }
 
-      function layout(){
-        var headerHeight = header.offsetHeight;
-        var viewportHeight = window.innerHeight;
-        var stickyHeight = viewportHeight - headerHeight;
-
-        stickyWrap.style.top = headerHeight + 'px';
-        stickyWrap.style.height = stickyHeight + 'px';
-
-        markers.forEach(function(marker){
-          marker.style.height = viewportHeight + 'px';
-        });
-      }
-
-      function updateActiveChannel(){
-        var trackTop = track.getBoundingClientRect().top + window.scrollY;
-        var stickyHeight = stickyWrap.offsetHeight;
-        var viewportHeight = window.innerHeight;
-
-        var progress = window.scrollY - trackTop - stickyHeight;
-        var index = Math.floor(progress / viewportHeight);
-        index = Math.max(0, Math.min(CHANNELS.length - 1, index));
-        renderChannel(index);
-      }
-
-      layout();
-      renderChannel(0);
-
-      window.addEventListener('resize', function(){
-        layout();
-        updateActiveChannel();
+        list.appendChild(block);
       });
-      window.addEventListener('scroll', updateActiveChannel, { passive: true });
-      setTimeout(layout, 300); // re-measure once fonts/logo finish rendering
+    })();
+  </script>
+  <script>
+    (function(){
+      var header = document.getElementById('siteHeader');
+      var main = document.querySelector('main');
+
+      function adjustSpacing(){
+        main.style.paddingTop = (header.offsetHeight + 24) + 'px';
+      }
+
+      adjustSpacing();
+      window.addEventListener('resize', adjustSpacing);
+      window.addEventListener('load', adjustSpacing);
+      setTimeout(adjustSpacing, 300); // re-measure once fonts/logo finish rendering
     })();
   </script>
   <script>
