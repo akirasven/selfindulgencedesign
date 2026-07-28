@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Self Indulgence Design</title>
+<title>Self Indulgence Design — Shop</title>
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="favicon-48.png">
@@ -25,7 +25,6 @@
     min-height:100%;
   }
 
-  /* ---- fixed header ---- */
   .site-header{
     position:fixed;
     top:0;
@@ -51,7 +50,7 @@
       height:110px;
     }
     main{
-      align-items:center;
+      padding-top:210px;
     }
   }
 
@@ -93,62 +92,26 @@
     opacity:0.6;
   }
 
-  /* ---- main content, pushed down below the fixed header ---- */
   main{
     flex:1;
     width:100%;
     display:flex;
-    align-items:flex-start;
+    align-items:center;
     justify-content:center;
     text-align:center;
-    padding:24px 24px 24px; /* top padding is set dynamically by JS to match the actual header height */
+    padding:150px 24px 24px;
   }
 
-  .definition{
-    font-size:15px;
-    font-style:italic;
-    font-weight:700;
-    line-height:1.5;
-    color:#6e1414;
-    max-width:520px;
-    margin:16px auto 32px;
-  }
-
-  .definition a{
-    color:#6e1414;
-  }
-
-  h1{
-    font-size:clamp(28px, 5vw, 48px);
-    font-weight:700;
-    letter-spacing:0.06em;
-    text-transform:uppercase;
-    line-height:1.2;
-  }
   p{
-    margin-top:16px;
-    font-size:20px;
-    font-style:italic;
-    font-weight:700;
-    letter-spacing:0.04em;
+    font-size:14px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
     color:#6e1414;
-  }
-
-  .yt-frame{
-    margin:32px auto 0;
-    width:min(92vw, 720px);
-    aspect-ratio:16/9;
-  }
-
-  .yt-frame iframe{
-    width:100%;
-    height:100%;
-    border:0;
   }
 </style>
 </head>
 <body>
-  <header class="site-header" id="siteHeader">
+  <header class="site-header">
     <video id="logoVideo" class="visually-hidden-video" muted loop autoplay playsinline>
       <source src="header-logo-chroma.mp4" type="video/mp4">
     </video>
@@ -165,41 +128,8 @@
   </header>
 
   <main>
-    <div>
-      <h1>Self Indulgence Design</h1>
-      <div class="definition">
-        <div>excessive or unrestrained gratification of one's own appetites, desires, or whims</div>
-        <div>self-indulgent. self-in-ˈdəl-jənt. adjective. self-indulgently</div>
-      </div>
-      <p>Pretty On The Inside</p>
-      <div class="yt-frame">
-        <iframe
-          src="https://www.youtube-nocookie.com/embed/IZ3QvrsQHTo"
-          title="Self Indulgence Design"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowfullscreen>
-        </iframe>
-      </div>
-    </div>
+    <p>Coming Soon</p>
   </main>
-
-  <script>
-    (function(){
-      var header = document.getElementById('siteHeader');
-      var main = document.querySelector('main');
-
-      function adjustSpacing(){
-        main.style.paddingTop = (header.offsetHeight + 24) + 'px';
-      }
-
-      adjustSpacing();
-      window.addEventListener('resize', adjustSpacing);
-      window.addEventListener('load', adjustSpacing);
-      // header height can change slightly once fonts/logo finish rendering
-      setTimeout(adjustSpacing, 300);
-    })();
-  </script>
-
   <script>
     (function(){
       var video = document.getElementById('logoVideo');
@@ -213,7 +143,6 @@
           var data = frame.data;
           for (var i = 0; i < data.length; i += 4){
             var r = data[i], g = data[i+1], b = data[i+2];
-            // key out the green background, keep everything else opaque
             if (g > 85 && g > r * 1.3 && g > b * 1.3){
               data[i+3] = 0;
             }
@@ -229,4 +158,3 @@
   </script>
 </body>
 </html>
-
