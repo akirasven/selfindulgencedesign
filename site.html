@@ -93,6 +93,40 @@
     opacity:0.6;
   }
 
+  .marquee{
+    width:100%;
+    overflow:hidden;
+    background:#6e1414;
+    border-top:1px solid rgba(255,255,255,0.15);
+    white-space:nowrap;
+  }
+
+  .marquee-track{
+    display:inline-flex;
+    white-space:nowrap;
+    animation: marquee-scroll 55s linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-track span{
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:#f5efe6;
+    padding:7px 0;
+    flex-shrink:0;
+  }
+
+  @keyframes marquee-scroll{
+    from{ transform:translateX(-50%); }
+    to{ transform:translateX(0%); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .marquee-track{ animation:none; }
+  }
+
   /* ---- main content, pushed down below the fixed header ---- */
   main{
     flex:1;
@@ -162,6 +196,9 @@
       <a href="order.html">Order</a>
       <a href="shop.html">Shop</a>
     </nav>
+    <div class="marquee">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
   </header>
 
   <main>
@@ -200,6 +237,14 @@
     })();
   </script>
 
+  <script>
+    (function(){
+      var track = document.getElementById('marqueeTrack');
+      var phrase = "SELF INDULGENCE  *  THE INDUSTRY'S BEST KEPT SECRET  *  ";
+      var repeated = phrase.repeat(20);
+      track.innerHTML = '<span>' + repeated + '</span><span>' + repeated + '</span>';
+    })();
+  </script>
   <script>
     (function(){
       var video = document.getElementById('logoVideo');
