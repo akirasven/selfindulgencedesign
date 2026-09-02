@@ -139,17 +139,118 @@
     flex:1;
     width:100%;
     display:flex;
+    justify-content:center;
+    padding:150px 24px 60px;
+  }
+
+  .models-layout{
+    width:100%;
+    max-width:1000px;
+    display:flex;
+    gap:56px;
+    align-items:flex-start;
+  }
+
+  .model-list{
+    flex-shrink:0;
+    width:200px;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+
+  .model-list button{
+    appearance:none;
+    background:transparent;
+    border:none;
+    border-bottom:1px solid transparent;
+    text-align:left;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:17px;
+    letter-spacing:0.05em;
+    text-transform:uppercase;
+    color:#9a8080;
+    padding:12px 0;
+    cursor:pointer;
+    transition:color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .model-list button:hover,
+  .model-list button:focus-visible{
+    color:#6e1414;
+  }
+
+  .model-list button.active{
+    color:#6e1414;
+    font-weight:700;
+    border-bottom-color:#6e1414;
+  }
+
+  .model-content{
+    flex:1;
+    min-width:0;
+    text-align:left;
+  }
+
+  .model-photo{
+    width:100%;
+    max-width:520px;
+    aspect-ratio:4/3;
+    background:repeating-linear-gradient(115deg, #f7f0f0 0 2px, #efe4e4 2px 4px);
+    border:1px solid #eee2e2;
+    display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
-    padding:150px 24px 24px;
   }
 
-  p{
-    font-size:14px;
-    letter-spacing:0.18em;
+  .model-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .model-photo span{
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:#9a8080;
+    max-width:220px;
+    line-height:1.6;
+  }
+
+  .model-title{
+    margin-top:24px;
+    font-size:26px;
+    font-weight:700;
+    letter-spacing:0.05em;
     text-transform:uppercase;
     color:#6e1414;
+  }
+
+  .model-description{
+    margin-top:12px;
+    max-width:480px;
+    font-size:15px;
+    line-height:1.6;
+    color:#111110;
+  }
+
+  @media (max-width: 640px){
+    .models-layout{
+      flex-direction:column;
+      gap:28px;
+    }
+    .model-list{
+      width:100%;
+      flex-direction:row;
+      flex-wrap:wrap;
+      gap:0 20px;
+    }
+    .model-list button{
+      padding:8px 0;
+    }
   }
 </style>
 </head>
@@ -174,8 +275,79 @@
   </header>
 
   <main>
-    <p>Coming Soon</p>
+    <div class="models-layout">
+      <div class="model-list" id="modelList"></div>
+      <div class="model-content">
+        <div class="model-photo" id="modelPhoto"></div>
+        <div class="model-title" id="modelTitle"></div>
+        <div class="model-description" id="modelDescription"></div>
+      </div>
+    </div>
   </main>
+
+  <script>
+    /*
+      MODELS
+      ----------------------------------------------------
+      Add photos and real descriptions here as you have them.
+      photo: path to an image (e.g. "models/jazzpunk.jpg"), or null to
+      show a placeholder until you have one.
+      description: a paragraph about the board — dimensions, feel,
+      what conditions it's built for, etc.
+    */
+    var MODELS = [
+      {
+        name: "Jazzpunk",
+        photo: null,
+        description: "Add a description for the Jazzpunk here — dimensions, riding style, and what it's built for."
+      },
+      {
+        name: "PunkStyleLove",
+        photo: null,
+        description: "Add a description for the PunkStyleLove here — dimensions, riding style, and what it's built for."
+      },
+      {
+        name: "Sidfishious",
+        photo: null,
+        description: "Add a description for the Sidfishious here — dimensions, riding style, and what it's built for."
+      }
+    ];
+
+    (function(){
+      var list = document.getElementById('modelList');
+      var photoEl = document.getElementById('modelPhoto');
+      var titleEl = document.getElementById('modelTitle');
+      var descEl = document.getElementById('modelDescription');
+      var buttons = [];
+
+      function showModel(index){
+        var model = MODELS[index];
+
+        buttons.forEach(function(btn, i){
+          btn.classList.toggle('active', i === index);
+        });
+
+        titleEl.textContent = model.name;
+        descEl.textContent = model.description;
+
+        if (model.photo){
+          photoEl.innerHTML = '<img src="' + model.photo + '" alt="' + model.name + '">';
+        } else {
+          photoEl.innerHTML = '<span>Photo coming soon for ' + model.name + '</span>';
+        }
+      }
+
+      MODELS.forEach(function(model, i){
+        var btn = document.createElement('button');
+        btn.textContent = model.name;
+        btn.addEventListener('click', function(){ showModel(i); });
+        list.appendChild(btn);
+        buttons.push(btn);
+      });
+
+      showModel(0);
+    })();
+  </script>
   <script>
     (function(){
       var header = document.getElementById('siteHeader');
