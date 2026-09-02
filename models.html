@@ -192,31 +192,39 @@
     text-align:left;
   }
 
-  .model-photo{
+  .model-photos{
     width:100%;
     max-width:520px;
-    aspect-ratio:4/3;
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:12px;
+  }
+
+  .model-photos .photo-slot{
+    width:100%;
+    aspect-ratio:3/4;
     background:repeating-linear-gradient(115deg, #f7f0f0 0 2px, #efe4e4 2px 4px);
     border:1px solid #eee2e2;
     display:flex;
     align-items:center;
     justify-content:center;
     text-align:center;
+    overflow:hidden;
   }
 
-  .model-photo img{
+  .model-photos img{
     width:100%;
     height:100%;
     object-fit:cover;
     display:block;
   }
 
-  .model-photo span{
+  .model-photos span{
     font-size:11px;
     letter-spacing:0.12em;
     text-transform:uppercase;
     color:#9a8080;
-    max-width:220px;
+    max-width:160px;
     line-height:1.6;
   }
 
@@ -278,7 +286,7 @@
     <div class="models-layout">
       <div class="model-list" id="modelList"></div>
       <div class="model-content">
-        <div class="model-photo" id="modelPhoto"></div>
+        <div class="model-photos" id="modelPhotos"></div>
         <div class="model-title" id="modelTitle"></div>
         <div class="model-description" id="modelDescription"></div>
       </div>
@@ -289,33 +297,30 @@
     /*
       MODELS
       ----------------------------------------------------
-      Add photos and real descriptions here as you have them.
-      photo: path to an image (e.g. "models/jazzpunk.jpg"), or null to
-      show a placeholder until you have one.
-      description: a paragraph about the board — dimensions, feel,
-      what conditions it's built for, etc.
+      Each model can have any number of photos (an empty array shows
+      a placeholder slot instead). Add more photo paths as you get them.
     */
     var MODELS = [
       {
         name: "Jazzpunk",
-        photo: null,
-        description: "Add a description for the Jazzpunk here — dimensions, riding style, and what it's built for."
+        photos: ["models/jazzpunk-1.jpg"],
+        description: "Officially calling this board the Jazzpunk. A winged swallow tail twin fin that includes a single concave out the tail, allowing more speed and control than a classic twin fin but still very loose and free feeling under the feet."
       },
       {
         name: "PunkStyleLove",
-        photo: null,
-        description: "Add a description for the PunkStyleLove here — dimensions, riding style, and what it's built for."
+        photos: ["models/punkstylelove-1.jpg", "models/punkstylelove-2.jpg"],
+        description: "Typically ridden between 6'2 and 6'7, this board comes as a quad or twinzer."
       },
       {
         name: "Sidfishious",
-        photo: null,
-        description: "Add a description for the Sidfishious here — dimensions, riding style, and what it's built for."
+        photos: ["models/sidfishious-1.jpg", "models/sidfishious-2.jpg"],
+        description: "Classic fish."
       }
     ];
 
     (function(){
       var list = document.getElementById('modelList');
-      var photoEl = document.getElementById('modelPhoto');
+      var photosEl = document.getElementById('modelPhotos');
       var titleEl = document.getElementById('modelTitle');
       var descEl = document.getElementById('modelDescription');
       var buttons = [];
@@ -330,11 +335,23 @@
         titleEl.textContent = model.name;
         descEl.textContent = model.description;
 
-        if (model.photo){
-          photoEl.innerHTML = '<img src="' + model.photo + '" alt="' + model.name + '">';
-        } else {
-          photoEl.innerHTML = '<span>Photo coming soon for ' + model.name + '</span>';
-        }
+        photosEl.innerHTML = '';
+        var photos = model.photos && model.photos.length ? model.photos : [null];
+        photos.forEach(function(src){
+          var slot = document.createElement('div');
+          slot.className = 'photo-slot';
+          if (src){
+            var img = document.createElement('img');
+            img.src = src;
+            img.alt = model.name;
+            slot.appendChild(img);
+          } else {
+            var span = document.createElement('span');
+            span.textContent = 'Photo coming soon';
+            slot.appendChild(span);
+          }
+          photosEl.appendChild(slot);
+        });
       }
 
       MODELS.forEach(function(model, i){
