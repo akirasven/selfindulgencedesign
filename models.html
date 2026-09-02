@@ -18,6 +18,8 @@
     color:#6e1414;
     font-family: "Times New Roman", Times, Georgia, serif;
     cursor: url('cursor-star.png') 16 16, auto;
+    -webkit-text-size-adjust:100%; /* stops iOS Safari from auto-boosting text size, which was hiding the marquee until manually changing text size */
+    text-size-adjust:100%;
   }
   body{
     display:flex;
@@ -193,13 +195,12 @@
     flex:1;
     width:100%;
     display:flex;
-    justify-content:center;
-    padding:150px 24px 60px;
+    justify-content:flex-start;
+    padding:150px 0 60px 40px;
   }
 
   .models-layout{
     width:100%;
-    max-width:1000px;
     display:flex;
     gap:56px;
     align-items:flex-start;
@@ -243,19 +244,44 @@
   .model-content{
     flex:1;
     min-width:0;
+    max-width:520px;
     text-align:left;
   }
 
-  .model-photos{
-    width:100%;
-    max-width:520px;
-    display:grid;
-    grid-template-columns:repeat(2, 1fr);
-    gap:12px;
+  /* ---- single photo viewer with prev/next arrows ---- */
+  .model-photo-viewer{
+    display:flex;
+    align-items:center;
+    gap:10px;
   }
 
-  .model-photos .photo-slot{
-    width:100%;
+  .photo-nav{
+    appearance:none;
+    background:transparent;
+    border:none;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:34px;
+    line-height:1;
+    color:#6e1414;
+    cursor:pointer;
+    padding:0 4px;
+    flex-shrink:0;
+    transition:opacity 0.3s ease;
+  }
+
+  .photo-nav:hover,
+  .photo-nav:focus-visible{
+    opacity:0.6;
+  }
+
+  .photo-nav:disabled{
+    opacity:0.2;
+    cursor:default;
+  }
+
+  .model-photo-frame{
+    flex:1;
+    min-width:0;
     aspect-ratio:3/4;
     background:repeating-linear-gradient(115deg, #f7f0f0 0 2px, #efe4e4 2px 4px);
     border:1px solid #eee2e2;
@@ -264,21 +290,22 @@
     justify-content:center;
     text-align:center;
     overflow:hidden;
+    cursor:pointer;
   }
 
-  .model-photos img{
+  .model-photo-frame img{
     width:100%;
     height:100%;
     object-fit:cover;
     display:block;
   }
 
-  .model-photos span{
+  .model-photo-frame span{
     font-size:11px;
     letter-spacing:0.12em;
     text-transform:uppercase;
     color:#9a8080;
-    max-width:160px;
+    max-width:200px;
     line-height:1.6;
   }
 
@@ -299,7 +326,69 @@
     color:#111110;
   }
 
+  /* ---- lightbox (click photo to view full screen) ---- */
+  .lightbox{
+    position:fixed;
+    inset:0;
+    background:rgba(10,10,10,0.94);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+  }
+
+  .lightbox[hidden]{
+    display:none;
+  }
+
+  .lightbox img{
+    max-width:88vw;
+    max-height:82vh;
+    display:block;
+  }
+
+  .lightbox-close,
+  .lightbox-nav{
+    position:fixed;
+    appearance:none;
+    background:transparent;
+    border:none;
+    color:#f5f0ee;
+    cursor:pointer;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    transition:opacity 0.3s ease;
+  }
+
+  .lightbox-close:hover,
+  .lightbox-nav:hover{
+    opacity:0.6;
+  }
+
+  .lightbox-close{
+    top:20px;
+    right:24px;
+    font-size:32px;
+  }
+
+  .lightbox-nav{
+    top:50%;
+    transform:translateY(-50%);
+    font-size:48px;
+    padding:10px 16px;
+  }
+
+  .lightbox-prev{ left:8px; }
+  .lightbox-next{ right:8px; }
+
+  @media (max-width:480px){
+    .lightbox-nav{ font-size:36px; padding:6px 10px; }
+  }
+
   @media (max-width: 640px){
+    main{
+      padding-left:24px;
+      padding-right:24px;
+    }
     .models-layout{
       gap:20px;
     }
@@ -311,8 +400,11 @@
       font-size:14px;
       padding:8px 0;
     }
-    .model-photos{
-      grid-template-columns:1fr;
+    .model-photo-frame{
+      aspect-ratio:3/4;
+    }
+    .photo-nav{
+      font-size:24px;
     }
   }
 </style>
@@ -341,12 +433,23 @@
     <div class="models-layout">
       <div class="model-list" id="modelList"></div>
       <div class="model-content">
-        <div class="model-photos" id="modelPhotos"></div>
+        <div class="model-photo-viewer">
+          <button class="photo-nav photo-prev" id="modelPhotoPrev" aria-label="Previous photo">&#8249;</button>
+          <div class="model-photo-frame" id="modelPhotoFrame"></div>
+          <button class="photo-nav photo-next" id="modelPhotoNext" aria-label="Next photo">&#8250;</button>
+        </div>
         <div class="model-title" id="modelTitle"></div>
         <div class="model-description" id="modelDescription"></div>
       </div>
     </div>
   </main>
+
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous photo">&#8249;</button>
+    <img id="lightboxImg" src="" alt="Enlarged board photo">
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
+  </div>
 
   <script>
     /*
@@ -375,13 +478,46 @@
 
     (function(){
       var list = document.getElementById('modelList');
-      var photosEl = document.getElementById('modelPhotos');
+      var frame = document.getElementById('modelPhotoFrame');
+      var prevBtn = document.getElementById('modelPhotoPrev');
+      var nextBtn = document.getElementById('modelPhotoNext');
       var titleEl = document.getElementById('modelTitle');
       var descEl = document.getElementById('modelDescription');
       var buttons = [];
 
+      var modelIndex = 0;
+      var photoIndex = 0;
+
+      function currentPhotos(){
+        var model = MODELS[modelIndex];
+        return (model.photos && model.photos.length) ? model.photos : [null];
+      }
+
+      function renderPhoto(){
+        var photos = currentPhotos();
+        var src = photos[photoIndex];
+
+        frame.innerHTML = '';
+        if (src){
+          var img = document.createElement('img');
+          img.src = src;
+          img.alt = MODELS[modelIndex].name;
+          frame.appendChild(img);
+        } else {
+          var span = document.createElement('span');
+          span.textContent = 'Photo coming soon';
+          frame.appendChild(span);
+        }
+
+        var multiple = photos.length > 1;
+        prevBtn.disabled = !multiple;
+        nextBtn.disabled = !multiple;
+      }
+
       function showModel(index){
-        var model = MODELS[index];
+        modelIndex = index;
+        photoIndex = 0;
+        var model = MODELS[modelIndex];
 
         buttons.forEach(function(btn, i){
           btn.classList.toggle('active', i === index);
@@ -389,24 +525,14 @@
 
         titleEl.textContent = model.name;
         descEl.textContent = model.description;
+        renderPhoto();
+      }
 
-        photosEl.innerHTML = '';
-        var photos = model.photos && model.photos.length ? model.photos : [null];
-        photos.forEach(function(src){
-          var slot = document.createElement('div');
-          slot.className = 'photo-slot';
-          if (src){
-            var img = document.createElement('img');
-            img.src = src;
-            img.alt = model.name;
-            slot.appendChild(img);
-          } else {
-            var span = document.createElement('span');
-            span.textContent = 'Photo coming soon';
-            slot.appendChild(span);
-          }
-          photosEl.appendChild(slot);
-        });
+      function stepPhoto(step){
+        var photos = currentPhotos();
+        if (photos.length <= 1) return;
+        photoIndex = (photoIndex + step + photos.length) % photos.length;
+        renderPhoto();
       }
 
       MODELS.forEach(function(model, i){
@@ -415,6 +541,47 @@
         btn.addEventListener('click', function(){ showModel(i); });
         list.appendChild(btn);
         buttons.push(btn);
+      });
+
+      prevBtn.addEventListener('click', function(){ stepPhoto(-1); });
+      nextBtn.addEventListener('click', function(){ stepPhoto(1); });
+
+      // ---- fullscreen lightbox ----
+      var lightbox = document.getElementById('lightbox');
+      var lightboxImg = document.getElementById('lightboxImg');
+
+      function openLightbox(){
+        var photos = currentPhotos();
+        if (!photos[photoIndex]) return; // nothing to enlarge for a placeholder slot
+        lightboxImg.src = photos[photoIndex];
+        lightbox.hidden = false;
+      }
+
+      function closeLightbox(){
+        lightbox.hidden = true;
+        lightboxImg.src = '';
+      }
+
+      function lightboxStep(step){
+        stepPhoto(step);
+        var photos = currentPhotos();
+        if (photos[photoIndex]) lightboxImg.src = photos[photoIndex];
+      }
+
+      frame.addEventListener('click', openLightbox);
+      document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+      document.getElementById('lightboxPrev').addEventListener('click', function(){ lightboxStep(-1); });
+      document.getElementById('lightboxNext').addEventListener('click', function(){ lightboxStep(1); });
+
+      lightbox.addEventListener('click', function(e){
+        if (e.target === lightbox){ closeLightbox(); }
+      });
+
+      document.addEventListener('keydown', function(e){
+        if (lightbox.hidden) return;
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowLeft') lightboxStep(-1);
+        if (e.key === 'ArrowRight') lightboxStep(1);
       });
 
       showModel(0);
