@@ -13,6 +13,7 @@
   *{ margin:0; padding:0; box-sizing:border-box; }
   html,body{
     height:100%;
+    overflow-x:hidden;
     background:#ffffff;
     color:#6e1414;
     font-family: "Times New Roman", Times, Georgia, serif;
@@ -30,7 +31,10 @@
     position:fixed;
     top:0;
     left:0;
+    right:0;
     width:100%;
+    -webkit-transform:translateZ(0);
+    transform:translateZ(0);
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -99,13 +103,21 @@
     background:#6e1414;
     border-top:1px solid rgba(255,255,255,0.15);
     white-space:nowrap;
+    -webkit-transform:translateZ(0); /* forces iOS Safari to paint this layer immediately */
+    transform:translateZ(0);
   }
 
   .marquee-track{
-    display:inline-flex;
+    display:flex;
+    width:max-content;
     white-space:nowrap;
-    animation: marquee-scroll 55s linear infinite;
+    animation: marquee-scroll 150s linear infinite;
+    -webkit-animation: marquee-scroll 150s linear infinite;
     will-change: transform;
+    -webkit-transform:translate3d(0,0,0); /* fixes iOS Safari not rendering CSS animations inside position:fixed ancestors until a repaint is forced */
+    transform:translate3d(0,0,0);
+    -webkit-backface-visibility:hidden;
+    backface-visibility:hidden;
   }
 
   .marquee-track span{
