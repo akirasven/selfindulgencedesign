@@ -139,6 +139,60 @@
     .marquee-track{ animation:none; }
   }
 
+  .site-footer{
+    width:100%;
+    background:#6e1414;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:28px;
+    flex-wrap:wrap;
+    padding:16px 24px;
+  }
+
+  .footer-star{
+    width:22px;
+    height:22px;
+    flex-shrink:0;
+  }
+
+  .footer-nav{
+    display:flex;
+    align-items:center;
+    gap:24px;
+  }
+
+  .footer-nav a{
+    color:#f5efe6;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:13px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    text-decoration:none;
+    transition:opacity 0.3s ease;
+  }
+
+  .footer-nav a:hover,
+  .footer-nav a:focus-visible{
+    opacity:0.65;
+  }
+
+  .footer-social{
+    width:26px;
+    height:26px;
+    border-radius:50%;
+    background:#f5efe6;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+  }
+
+  .footer-social svg{
+    width:15px;
+    height:15px;
+  }
+
   /* ---- main content, pushed down below the fixed header ---- */
   main{
     flex:1;
@@ -284,6 +338,22 @@
       requestAnimationFrame(drawFrame);
     })();
   </script>
+  <footer class="site-footer">
+    <svg class="footer-star" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <polygon points="50.00,8.00 40.57,37.02 10.06,37.02 34.74,54.96 25.31,83.98 50.00,66.04 74.69,83.98 65.26,54.96 89.94,37.02 59.43,37.02" fill="#f5efe6"/>
+    </svg>
+    <nav class="footer-nav">
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact</a>
+      <a href="https://www.instagram.com/selfindulgencedesign?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#6e1414" stroke-width="2"/>
+          <circle cx="12" cy="12" r="5" fill="none" stroke="#6e1414" stroke-width="2"/>
+          <circle cx="17.5" cy="6.5" r="1.3" fill="#6e1414"/>
+        </svg>
+      </a>
+    </nav>
+  </footer>
 </body>
 </html>
 
