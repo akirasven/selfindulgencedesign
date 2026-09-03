@@ -487,23 +487,7 @@
       via admin.html), they quietly replace this list a moment later
       — see the separate <script type="module"> right below this one.
     */
-    var FALLBACK_MODELS = [
-      {
-        name: "Jazzpunk",
-        photos: ["models/jazzpunk-1.jpg"],
-        description: "Officially calling this board the Jazzpunk. A winged swallow tail twin fin that includes a single concave out the tail, allowing more speed and control than a classic twin fin but still very loose and free feeling under the feet."
-      },
-      {
-        name: "PunkStyleLove",
-        photos: ["models/punkstylelove-1.jpg", "models/punkstylelove-2.jpg"],
-        description: "Typically ridden between 6'2 and 6'7, this board comes as a quad or twinzer."
-      },
-      {
-        name: "Sidfishious",
-        photos: ["models/sidfishious-1.jpg", "models/sidfishious-2.jpg"],
-        description: "Classic fish."
-      }
-    ];
+    var FALLBACK_MODELS = [];
 
     var modelPage = (function(){
       var MODELS = FALLBACK_MODELS;
@@ -520,6 +504,7 @@
 
       function currentPhotos(){
         var model = MODELS[modelIndex];
+        if (!model) return [null];
         return (model.photos && model.photos.length) ? model.photos : [null];
       }
 
@@ -547,12 +532,19 @@
       function showModel(index){
         modelIndex = index;
         photoIndex = 0;
-        var model = MODELS[modelIndex];
 
         buttons.forEach(function(btn, i){
           btn.classList.toggle('active', i === index);
         });
 
+        if (!MODELS.length){
+          titleEl.textContent = '';
+          descEl.textContent = '';
+          renderPhoto();
+          return;
+        }
+
+        var model = MODELS[modelIndex];
         titleEl.textContent = model.name;
         descEl.textContent = model.description;
         renderPhoto();
