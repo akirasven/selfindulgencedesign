@@ -3,10 +3,10 @@
 // This file is imported by admin.html, models.html, and archive.html — edit it in ONE place.
 
 export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDgZL2k6ibuG9IyiJ_rNJWgvYcszNbULeU",
+  authDomain: "selfindulgencedesignwebsite.firebaseapp.com",
+  projectId: "selfindulgencedesignwebsite",
+  storageBucket: "selfindulgencedesignwebsite.firebasestorage.app",
+  messagingSenderId: "554406443488",
+  appId: "1:554406443488:web:b0a73ddedb11a10e84d385"
 };
