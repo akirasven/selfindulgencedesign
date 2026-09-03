@@ -203,6 +203,18 @@
     padding-bottom:80px;
   }
 
+  @media (min-width: 640px){
+    .gallery{
+      grid-template-columns:repeat(3, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px){
+    .gallery{
+      grid-template-columns:repeat(4, 1fr);
+    }
+  }
+
   .gallery figure{
     width:100%;
     margin:0;
@@ -375,21 +387,13 @@
     /*
       ARCHIVE PHOTOS
       ----------------------------------------------------
-      This list renders immediately so the page never depends on
-      Firebase loading successfully. If Firestore has photos (added
-      via admin.html), they quietly replace this list a moment later
-      — see the separate <script type="module"> right below this one.
+      All archive photos now live in Firestore, managed from
+      admin.html — this list stays empty on purpose so nothing shows
+      twice. It's still here as a safety net: if you ever want a few
+      guaranteed-to-render photos even when Firestore is unreachable,
+      add entries here in the same { src, aspect } shape as before.
     */
-    var FALLBACK_PHOTOS = [
-      { src: "archive/photo-04.jpg", aspect: "aspect-wide" },
-      { src: "archive/photo-07.jpg", aspect: "aspect-wide" },
-      { src: "archive/photo-03.jpg", aspect: "aspect-tall" },
-      { src: "archive/photo-02.jpg", aspect: "aspect-tall" },
-      { src: "archive/photo-05.jpg", aspect: "aspect-tall" },
-      { src: "archive/photo-06.jpg", aspect: "aspect-tall" },
-      { src: "archive/photo-08.jpg", aspect: "aspect-wide" },
-      { src: "archive/photo-01.jpg", aspect: "aspect-wide" }
-    ];
+    var FALLBACK_PHOTOS = [];
 
     var archivePage = (function(){
       var PHOTOS = FALLBACK_PHOTOS;
@@ -479,10 +483,12 @@
 
       return {
         // Called from the module script below if — and only if —
-        // Firestore is reachable and has archive photos in it.
+        // Firestore is reachable and has archive photos in it. Keeps
+        // the original hardcoded photos and adds the new ones after
+        // them, rather than replacing them.
         setPhotos: function(newPhotos){
           if (!newPhotos || !newPhotos.length) return;
-          PHOTOS = newPhotos;
+          PHOTOS = FALLBACK_PHOTOS.concat(newPhotos);
           renderGallery();
         }
       };
