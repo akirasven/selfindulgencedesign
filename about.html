@@ -107,15 +107,11 @@
 
   .marquee-track{
     display:flex;
+    align-items:center;
+    height:100%;
     width:max-content;
     white-space:nowrap;
-    animation: marquee-scroll 150s linear infinite;
-    -webkit-animation: marquee-scroll 150s linear infinite;
     will-change: transform;
-    -webkit-transform:translate3d(0,0,0); /* fixes iOS Safari not rendering CSS animations inside position:fixed ancestors until a repaint is forced */
-    transform:translate3d(0,0,0);
-    -webkit-backface-visibility:hidden;
-    backface-visibility:hidden;
   }
 
   .marquee-track span{
@@ -126,15 +122,6 @@
     color:#f5efe6;
     padding:7px 0;
     flex-shrink:0;
-  }
-
-  @keyframes marquee-scroll{
-    from{ transform:translateX(-50%); }
-    to{ transform:translateX(0%); }
-  }
-
-  @media (prefers-reduced-motion: reduce){
-    .marquee-track{ animation:none; }
   }
 
   .site-footer{
@@ -259,6 +246,7 @@
     (function(){
       var track = document.getElementById('marqueeTrack');
       var phrase = "SELF INDULGENCE  *  THE INDUSTRY'S BEST KEPT SECRET  *  ";
+      var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       function buildMarquee(){
         // measure exactly one copy of the phrase at the marquee's real font styling
@@ -275,9 +263,6 @@
         var phraseWidth = measure.getBoundingClientRect().width || 400;
         document.body.removeChild(measure);
 
-        // repeat just enough to cover the screen twice over (for a seamless loop),
-        // instead of a huge fixed repeat count — very wide elements can silently
-        // fail to render on some iOS Safari versions
         var repeats = Math.max(4, Math.ceil(window.innerWidth / phraseWidth) + 2);
         var repeated = phrase.repeat(repeats);
         track.innerHTML = '<span>' + repeated + '</span><span>' + repeated + '</span>';
@@ -285,6 +270,32 @@
 
       buildMarquee();
       window.addEventListener('resize', buildMarquee);
+
+      if (reduceMotion) return; // respect the OS-level "reduce motion" accessibility setting
+
+      // Drive the scroll with plain JS on every frame instead of a CSS animation.
+      // CSS keyframe animations inside a position:fixed header were proving
+      // unreliable on iOS Safari; updating transform directly via
+      // requestAnimationFrame sidesteps that class of bug entirely.
+      var offset = 0;
+      var speedPxPerSec = 25; // lower = slower scroll
+      var lastTime = null;
+
+      function tick(timestamp){
+        if (lastTime === null) lastTime = timestamp;
+        var delta = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        offset -= speedPxPerSec * delta;
+        var halfWidth = track.scrollWidth / 2;
+        if (halfWidth > 0 && Math.abs(offset) >= halfWidth){
+          offset += halfWidth;
+        }
+        track.style.transform = 'translateX(' + offset + 'px)';
+        requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
     })();
   </script>
   <script>
