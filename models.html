@@ -580,6 +580,30 @@
       prevBtn.addEventListener('click', function(){ stepPhoto(-1); });
       nextBtn.addEventListener('click', function(){ stepPhoto(1); });
 
+      // ---- swipe support (mobile) ----
+      function addSwipe(el, onSwipeLeft, onSwipeRight){
+        var startX = 0, startY = 0, tracking = false;
+        el.addEventListener('touchstart', function(e){
+          if (e.touches.length !== 1) return;
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          tracking = true;
+        }, { passive: true });
+        el.addEventListener('touchend', function(e){
+          if (!tracking) return;
+          tracking = false;
+          var touch = e.changedTouches[0];
+          var dx = touch.clientX - startX;
+          var dy = touch.clientY - startY;
+          var SWIPE_THRESHOLD = 40;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD){
+            if (dx < 0) onSwipeLeft(); else onSwipeRight();
+          }
+        }, { passive: true });
+      }
+
+      addSwipe(frame, function(){ stepPhoto(1); }, function(){ stepPhoto(-1); });
+
       // ---- fullscreen lightbox ----
       var lightbox = document.getElementById('lightbox');
       var lightboxImg = document.getElementById('lightboxImg');
@@ -602,6 +626,8 @@
         if (photos[photoIndex]) lightboxImg.src = photos[photoIndex];
       }
 
+      addSwipe(lightbox, function(){ lightboxStep(1); }, function(){ lightboxStep(-1); });
+
       frame.addEventListener('click', openLightbox);
       document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
       document.getElementById('lightboxPrev').addEventListener('click', function(){ lightboxStep(-1); });
@@ -623,10 +649,12 @@
 
       return {
         // Called from the module script below if — and only if —
-        // Firestore is reachable and has models in it.
+        // Firestore is reachable and has models in it. Keeps the
+        // original hardcoded models and adds the new ones after them,
+        // rather than replacing them.
         setModels: function(newModels){
           if (!newModels || !newModels.length) return;
-          MODELS = newModels;
+          MODELS = FALLBACK_MODELS.concat(newModels);
           buildModelList();
           showModel(0);
         }

@@ -449,6 +449,30 @@
         lightboxImg.src = PHOTOS[currentIndex].src;
       }
 
+      // ---- swipe support (mobile) ----
+      function addSwipe(el, onSwipeLeft, onSwipeRight){
+        var startX = 0, startY = 0, tracking = false;
+        el.addEventListener('touchstart', function(e){
+          if (e.touches.length !== 1) return;
+          startX = e.touches[0].clientX;
+          startY = e.touches[0].clientY;
+          tracking = true;
+        }, { passive: true });
+        el.addEventListener('touchend', function(e){
+          if (!tracking) return;
+          tracking = false;
+          var touch = e.changedTouches[0];
+          var dx = touch.clientX - startX;
+          var dy = touch.clientY - startY;
+          var SWIPE_THRESHOLD = 40;
+          if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > SWIPE_THRESHOLD){
+            if (dx < 0) onSwipeLeft(); else onSwipeRight();
+          }
+        }, { passive: true });
+      }
+
+      addSwipe(lightbox, function(){ showPhoto(1); }, function(){ showPhoto(-1); });
+
       document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
       document.getElementById('lightboxPrev').addEventListener('click', function(){ showPhoto(-1); });
       document.getElementById('lightboxNext').addEventListener('click', function(){ showPhoto(1); });
