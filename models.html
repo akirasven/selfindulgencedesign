@@ -97,25 +97,22 @@
 
   .marquee{
     width:100%;
-    height:30px;
     overflow:hidden;
     background:#6e1414;
     border-top:1px solid rgba(255,255,255,0.15);
     white-space:nowrap;
-    -webkit-transform:translateZ(0);
+    -webkit-transform:translateZ(0); /* forces iOS Safari to paint this layer immediately */
     transform:translateZ(0);
   }
 
   .marquee-track{
     display:flex;
-    align-items:center;
-    height:100%;
     width:max-content;
     white-space:nowrap;
     animation: marquee-scroll 150s linear infinite;
     -webkit-animation: marquee-scroll 150s linear infinite;
     will-change: transform;
-    -webkit-transform:translate3d(0,0,0);
+    -webkit-transform:translate3d(0,0,0); /* fixes iOS Safari not rendering CSS animations inside position:fixed ancestors until a repaint is forced */
     transform:translate3d(0,0,0);
     -webkit-backface-visibility:hidden;
     backface-visibility:hidden;
@@ -127,7 +124,7 @@
     letter-spacing:0.14em;
     text-transform:uppercase;
     color:#f5efe6;
-    padding:0;
+    padding:7px 0;
     flex-shrink:0;
   }
 
@@ -247,26 +244,8 @@
   .model-content{
     flex:1;
     min-width:0;
-    display:flex;
-    justify-content:center;
-  }
-
-  .model-detail{
-    display:flex;
-    align-items:flex-start;
-    gap:48px;
+    max-width:520px;
     text-align:left;
-  }
-
-  .model-photo-column{
-    flex-shrink:0;
-    width:320px;
-  }
-
-  .model-text-column{
-    flex-shrink:0;
-    width:320px;
-    padding-top:8px;
   }
 
   /* ---- single photo viewer with prev/next arrows ---- */
@@ -331,7 +310,7 @@
   }
 
   .model-title{
-    margin-top:0;
+    margin-top:24px;
     font-size:26px;
     font-weight:700;
     letter-spacing:0.05em;
@@ -341,7 +320,7 @@
 
   .model-description{
     margin-top:12px;
-    max-width:320px;
+    max-width:480px;
     font-size:15px;
     line-height:1.6;
     color:#111110;
@@ -421,21 +400,6 @@
       font-size:14px;
       padding:8px 0;
     }
-    .model-content{
-      justify-content:flex-start;
-    }
-    .model-detail{
-      flex-direction:column;
-      gap:20px;
-    }
-    .model-photo-column,
-    .model-text-column{
-      width:100%;
-      padding-top:0;
-    }
-    .model-description{
-      max-width:none;
-    }
     .model-photo-frame{
       aspect-ratio:3/4;
     }
@@ -469,19 +433,13 @@
     <div class="models-layout">
       <div class="model-list" id="modelList"></div>
       <div class="model-content">
-        <div class="model-detail">
-          <div class="model-photo-column">
-            <div class="model-photo-viewer">
-              <button class="photo-nav photo-prev" id="modelPhotoPrev" aria-label="Previous photo">&#8249;</button>
-              <div class="model-photo-frame" id="modelPhotoFrame"></div>
-              <button class="photo-nav photo-next" id="modelPhotoNext" aria-label="Next photo">&#8250;</button>
-            </div>
-          </div>
-          <div class="model-text-column">
-            <div class="model-title" id="modelTitle"></div>
-            <div class="model-description" id="modelDescription"></div>
-          </div>
+        <div class="model-photo-viewer">
+          <button class="photo-nav photo-prev" id="modelPhotoPrev" aria-label="Previous photo">&#8249;</button>
+          <div class="model-photo-frame" id="modelPhotoFrame"></div>
+          <button class="photo-nav photo-next" id="modelPhotoNext" aria-label="Next photo">&#8250;</button>
         </div>
+        <div class="model-title" id="modelTitle"></div>
+        <div class="model-description" id="modelDescription"></div>
       </div>
     </div>
   </main>
@@ -648,32 +606,8 @@
     (function(){
       var track = document.getElementById('marqueeTrack');
       var phrase = "SELF INDULGENCE  *  THE INDUSTRY'S BEST KEPT SECRET  *  ";
-
-      function buildMarquee(){
-        // measure exactly one copy of the phrase at the marquee's real font styling
-        var measure = document.createElement('span');
-        measure.style.visibility = 'hidden';
-        measure.style.position = 'absolute';
-        measure.style.whiteSpace = 'nowrap';
-        measure.style.fontFamily = '"Times New Roman", Times, Georgia, serif';
-        measure.style.fontSize = '12px';
-        measure.style.letterSpacing = '0.14em';
-        measure.style.textTransform = 'uppercase';
-        measure.textContent = phrase;
-        document.body.appendChild(measure);
-        var phraseWidth = measure.getBoundingClientRect().width || 400;
-        document.body.removeChild(measure);
-
-        // repeat just enough to cover the screen twice over (for a seamless loop),
-        // instead of a huge fixed repeat count — very wide elements can silently
-        // fail to render on some iOS Safari versions
-        var repeats = Math.max(4, Math.ceil(window.innerWidth / phraseWidth) + 2);
-        var repeated = phrase.repeat(repeats);
-        track.innerHTML = '<span>' + repeated + '</span><span>' + repeated + '</span>';
-      }
-
-      buildMarquee();
-      window.addEventListener('resize', buildMarquee);
+      var repeated = phrase.repeat(20);
+      track.innerHTML = '<span>' + repeated + '</span><span>' + repeated + '</span>';
     })();
   </script>
   <script>
