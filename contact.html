@@ -259,8 +259,32 @@
     (function(){
       var track = document.getElementById('marqueeTrack');
       var phrase = "SELF INDULGENCE  *  THE INDUSTRY'S BEST KEPT SECRET  *  ";
-      var repeated = phrase.repeat(20);
-      track.innerHTML = '<span>' + repeated + '</span><span>' + repeated + '</span>';
+
+      function buildMarquee(){
+        // measure exactly one copy of the phrase at the marquee's real font styling
+        var measure = document.createElement('span');
+        measure.style.visibility = 'hidden';
+        measure.style.position = 'absolute';
+        measure.style.whiteSpace = 'nowrap';
+        measure.style.fontFamily = '"Times New Roman", Times, Georgia, serif';
+        measure.style.fontSize = '12px';
+        measure.style.letterSpacing = '0.14em';
+        measure.style.textTransform = 'uppercase';
+        measure.textContent = phrase;
+        document.body.appendChild(measure);
+        var phraseWidth = measure.getBoundingClientRect().width || 400;
+        document.body.removeChild(measure);
+
+        // repeat just enough to cover the screen twice over (for a seamless loop),
+        // instead of a huge fixed repeat count — very wide elements can silently
+        // fail to render on some iOS Safari versions
+        var repeats = Math.max(4, Math.ceil(window.innerWidth / phraseWidth) + 2);
+        var repeated = phrase.repeat(repeats);
+        track.innerHTML = '<span>' + repeated + '</span><span>' + repeated + '</span>';
+      }
+
+      buildMarquee();
+      window.addEventListener('resize', buildMarquee);
     })();
   </script>
   <script>
