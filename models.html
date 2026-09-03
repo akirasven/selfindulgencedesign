@@ -478,17 +478,14 @@
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
-    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
-    import { firebaseConfig } from "./firebase-config.js";
-
+  <script>
     /*
       MODELS
       ----------------------------------------------------
-      Model data now lives in Firestore (managed from admin.html) so it
-      can be edited without touching this file. This fallback list is
-      only used if Firestore has no models yet or can't be reached.
+      This list renders immediately so the page never depends on
+      Firebase loading successfully. If Firestore has models (added
+      via admin.html), they quietly replace this list a moment later
+      — see the separate <script type="module"> right below this one.
     */
     var FALLBACK_MODELS = [
       {
@@ -508,23 +505,8 @@
       }
     ];
 
-    var MODELS = FALLBACK_MODELS;
-
-    var app = initializeApp(firebaseConfig);
-    var db = getFirestore(app);
-
-    function loadModels(){
-      var q = query(collection(db, 'models'), orderBy('order', 'asc'));
-      return getDocs(q).then(function(snap){
-        var loaded = [];
-        snap.forEach(function(docSnap){ loaded.push(docSnap.data()); });
-        if (loaded.length) MODELS = loaded;
-      }).catch(function(err){
-        console.warn('Falling back to sample models — could not load from Firestore:', err);
-      });
-    }
-
-    (function(){
+    var modelPage = (function(){
+      var MODELS = FALLBACK_MODELS;
       var list = document.getElementById('modelList');
       var frame = document.getElementById('modelPhotoFrame');
       var prevBtn = document.getElementById('modelPhotoPrev');
@@ -636,13 +618,43 @@
         if (e.key === 'ArrowRight') lightboxStep(1);
       });
 
-      loadModels().then(function(){
-        buildModelList();
-        showModel(0);
-      });
+      buildModelList();
+      showModel(0);
+
+      return {
+        // Called from the module script below if — and only if —
+        // Firestore is reachable and has models in it.
+        setModels: function(newModels){
+          if (!newModels || !newModels.length) return;
+          MODELS = newModels;
+          buildModelList();
+          showModel(0);
+        }
+      };
     })();
   </script>
+  <script type="module">
+    // Tries to upgrade the page to live Firestore data. If this script
+    // fails to load or run for any reason (offline, ad blocker, Firebase
+    // not fully set up yet), the page above still works fine on its own.
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
+    var app = initializeApp(firebaseConfig);
+    var db = getFirestore(app);
+    var q = query(collection(db, 'models'), orderBy('order', 'asc'));
+
+    getDocs(q).then(function(snap){
+      var loaded = [];
+      snap.forEach(function(docSnap){ loaded.push(docSnap.data()); });
+      modelPage.setModels(loaded);
+    }).catch(function(err){
+      console.warn('Showing sample models — could not load from Firestore:', err);
+    });
+  </script>
   <script>
+
     (function(){
       var header = document.getElementById('siteHeader');
       var main = document.querySelector('main');
@@ -748,6 +760,7 @@
     <nav class="footer-nav">
       <a href="about.html">About Us</a>
       <a href="contact.html">Contact</a>
+      <a href="admin.html">Login</a>
       <a href="https://www.instagram.com/selfindulgencedesign?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="footer-social" aria-label="Instagram">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="#6e1414" stroke-width="2"/>
