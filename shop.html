@@ -441,7 +441,9 @@
       // CSS keyframe animations inside a position:fixed header were proving
       // unreliable on iOS Safari; updating transform directly via
       // requestAnimationFrame sidesteps that class of bug entirely.
-      var offset = 0;
+      // start one full "page" to the left so there's always real content
+      // to reveal as the track slides right (no blank gaps)
+      var offset = -(track.scrollWidth / 2);
       var speedPxPerSec = 25; // lower = slower scroll
       var lastTime = null;
 
@@ -450,10 +452,10 @@
         var delta = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
 
-        offset -= speedPxPerSec * delta;
+        offset += speedPxPerSec * delta; // increasing = moves left-to-right
         var halfWidth = track.scrollWidth / 2;
-        if (halfWidth > 0 && Math.abs(offset) >= halfWidth){
-          offset += halfWidth;
+        if (halfWidth > 0 && offset >= 0){
+          offset -= halfWidth;
         }
         track.style.transform = 'translateX(' + offset + 'px)';
         requestAnimationFrame(tick);
