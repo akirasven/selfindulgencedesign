@@ -371,22 +371,19 @@
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
     /*
       ARCHIVE PHOTOS
       ----------------------------------------------------
-      Replace this list with your real photos once you have them.
-      Each entry needs a file path (put images in an "archive" folder
-      next to this HTML file) and an aspect ratio class that controls
-      the placeholder shape: "aspect-tall", "aspect-wide", or "aspect-square".
-
-      Example once you have real files:
-      { src: "archive/board-01.jpg", aspect: "aspect-tall" }
-
-      Until then, this renders placeholder blocks so you can see the
-      scrolling layout in action.
+      Photos now live in Firestore (managed from admin.html) so they can
+      be added without touching this file. This fallback list is only
+      used if Firestore has no photos yet or can't be reached.
     */
-    var PHOTOS = [
+    var FALLBACK_PHOTOS = [
       { src: "archive/photo-04.jpg", aspect: "aspect-wide" },
       { src: "archive/photo-07.jpg", aspect: "aspect-wide" },
       { src: "archive/photo-03.jpg", aspect: "aspect-tall" },
@@ -396,6 +393,22 @@
       { src: "archive/photo-08.jpg", aspect: "aspect-wide" },
       { src: "archive/photo-01.jpg", aspect: "aspect-wide" }
     ];
+
+    var PHOTOS = FALLBACK_PHOTOS;
+
+    var app = initializeApp(firebaseConfig);
+    var db = getFirestore(app);
+
+    function loadPhotos(){
+      var q = query(collection(db, 'archivePhotos'), orderBy('order', 'asc'));
+      return getDocs(q).then(function(snap){
+        var loaded = [];
+        snap.forEach(function(docSnap){ loaded.push(docSnap.data()); });
+        if (loaded.length) PHOTOS = loaded;
+      }).catch(function(err){
+        console.warn('Falling back to sample archive photos — could not load from Firestore:', err);
+      });
+    }
 
     (function(){
       var gallery = document.getElementById('gallery');
@@ -426,9 +439,6 @@
           gallery.appendChild(figure);
         });
       }
-
-      // render the full set once — no repeating/looping
-      appendBatch();
 
       // ---- lightbox ----
       var lightbox = document.getElementById('lightbox');
@@ -481,6 +491,9 @@
       backToTop.addEventListener('click', function(){
         window.scrollTo({ top: 0, behavior: 'smooth' });
       });
+
+      // render the full set once loaded — no repeating/looping
+      loadPhotos().then(appendBatch);
     })();
   </script>
 

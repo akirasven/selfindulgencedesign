@@ -478,14 +478,19 @@
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next photo">&#8250;</button>
   </div>
 
-  <script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
     /*
       MODELS
       ----------------------------------------------------
-      Each model can have any number of photos (an empty array shows
-      a placeholder slot instead). Add more photo paths as you get them.
+      Model data now lives in Firestore (managed from admin.html) so it
+      can be edited without touching this file. This fallback list is
+      only used if Firestore has no models yet or can't be reached.
     */
-    var MODELS = [
+    var FALLBACK_MODELS = [
       {
         name: "Jazzpunk",
         photos: ["models/jazzpunk-1.jpg"],
@@ -502,6 +507,22 @@
         description: "Classic fish."
       }
     ];
+
+    var MODELS = FALLBACK_MODELS;
+
+    var app = initializeApp(firebaseConfig);
+    var db = getFirestore(app);
+
+    function loadModels(){
+      var q = query(collection(db, 'models'), orderBy('order', 'asc'));
+      return getDocs(q).then(function(snap){
+        var loaded = [];
+        snap.forEach(function(docSnap){ loaded.push(docSnap.data()); });
+        if (loaded.length) MODELS = loaded;
+      }).catch(function(err){
+        console.warn('Falling back to sample models — could not load from Firestore:', err);
+      });
+    }
 
     (function(){
       var list = document.getElementById('modelList');
@@ -562,13 +583,17 @@
         renderPhoto();
       }
 
-      MODELS.forEach(function(model, i){
-        var btn = document.createElement('button');
-        btn.textContent = model.name;
-        btn.addEventListener('click', function(){ showModel(i); });
-        list.appendChild(btn);
-        buttons.push(btn);
-      });
+      function buildModelList(){
+        list.innerHTML = '';
+        buttons = [];
+        MODELS.forEach(function(model, i){
+          var btn = document.createElement('button');
+          btn.textContent = model.name;
+          btn.addEventListener('click', function(){ showModel(i); });
+          list.appendChild(btn);
+          buttons.push(btn);
+        });
+      }
 
       prevBtn.addEventListener('click', function(){ stepPhoto(-1); });
       nextBtn.addEventListener('click', function(){ stepPhoto(1); });
@@ -611,7 +636,10 @@
         if (e.key === 'ArrowRight') lightboxStep(1);
       });
 
-      showModel(0);
+      loadModels().then(function(){
+        buildModelList();
+        showModel(0);
+      });
     })();
   </script>
   <script>

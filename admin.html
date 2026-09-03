@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Self Indulgence Design — Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<style>
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html,body{
+    min-height:100%;
+    background:#ffffff;
+    color:#6e1414;
+    font-family: "Times New Roman", Times, Georgia, serif;
+  }
+  body{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding-bottom:80px;
+  }
+
+  a{ color:#6e1414; }
+
+  /* ---- top bar ---- */
+  .admin-bar{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    padding:18px 24px;
+    background:#6e1414;
+  }
+
+  .admin-bar .brand{
+    color:#f5efe6;
+    font-size:15px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    text-decoration:none;
+  }
+
+  .admin-bar .actions{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+
+  .admin-bar button, .admin-bar a.btn{
+    appearance:none;
+    background:transparent;
+    border:1px solid #f5efe6;
+    color:#f5efe6;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    text-decoration:none;
+    padding:8px 14px;
+    cursor:pointer;
+    transition:opacity 0.3s ease;
+  }
+
+  .admin-bar button:hover{ opacity:0.7; }
+
+  /* ---- login ---- */
+  .login-wrap{
+    width:100%;
+    max-width:360px;
+    margin:120px auto 0;
+    padding:0 24px;
+    text-align:center;
+  }
+
+  .login-wrap h1{
+    font-size:22px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:32px;
+  }
+
+  form{
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+    text-align:left;
+  }
+
+  label{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:#6e1414;
+  }
+
+  input, textarea, select{
+    width:100%;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:16px;
+    color:#111110;
+    padding:10px 4px;
+    border:none;
+    border-bottom:1px solid #6e1414;
+    background:transparent;
+    outline:none;
+  }
+
+  textarea{ resize:vertical; min-height:70px; }
+
+  .primary-btn{
+    appearance:none;
+    background:#6e1414;
+    border:none;
+    color:#f5efe6;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:14px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    padding:12px 20px;
+    cursor:pointer;
+    transition:opacity 0.3s ease;
+  }
+
+  .primary-btn:hover{ opacity:0.8; }
+
+  .ghost-btn{
+    appearance:none;
+    background:transparent;
+    border:1px solid #6e1414;
+    color:#6e1414;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:12px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:8px 14px;
+    cursor:pointer;
+    transition:opacity 0.3s ease;
+  }
+
+  .ghost-btn:hover{ opacity:0.6; }
+
+  .danger-btn{
+    appearance:none;
+    background:transparent;
+    border:1px solid #b23b3b;
+    color:#b23b3b;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    padding:6px 10px;
+    cursor:pointer;
+    transition:opacity 0.3s ease;
+  }
+
+  .danger-btn:hover{ opacity:0.6; }
+
+  .error-msg{
+    font-size:13px;
+    color:#b23b3b;
+    letter-spacing:0.04em;
+    min-height:18px;
+  }
+
+  .status-msg{
+    font-size:12px;
+    color:#9a8080;
+    letter-spacing:0.06em;
+  }
+
+  /* ---- dashboard ---- */
+  .dash-wrap{
+    width:100%;
+    max-width:900px;
+    padding:32px 24px 0;
+  }
+
+  .tabs{
+    display:flex;
+    gap:8px;
+    border-bottom:1px solid #eee2e2;
+    margin-bottom:32px;
+  }
+
+  .tab-btn{
+    appearance:none;
+    background:transparent;
+    border:none;
+    border-bottom:2px solid transparent;
+    color:#9a8080;
+    font-family:"Times New Roman", Times, Georgia, serif;
+    font-size:14px;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    padding:10px 4px;
+    margin-right:24px;
+    cursor:pointer;
+  }
+
+  .tab-btn.active{
+    color:#6e1414;
+    border-bottom-color:#6e1414;
+    font-weight:700;
+  }
+
+  .tab-panel{ display:none; }
+  .tab-panel.active{ display:block; }
+
+  h2{
+    font-size:17px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    margin-bottom:16px;
+  }
+
+  .panel-section{
+    margin-bottom:56px;
+  }
+
+  /* ---- add-new card ---- */
+  .add-card{
+    border:1px solid #eee2e2;
+    padding:20px;
+    margin-bottom:32px;
+  }
+
+  .add-card form{ gap:16px; }
+
+  .row{ display:flex; gap:16px; flex-wrap:wrap; }
+  .row > label{ flex:1; min-width:160px; }
+
+  /* ---- entry cards (models / archive photos) ---- */
+  .entry-card{
+    border:1px solid #eee2e2;
+    padding:18px;
+    margin-bottom:16px;
+  }
+
+  .entry-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:12px;
+    margin-bottom:12px;
+  }
+
+  .entry-order{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+
+  .entry-order button{
+    appearance:none;
+    background:transparent;
+    border:1px solid #eee2e2;
+    color:#6e1414;
+    font-size:13px;
+    width:26px;
+    height:22px;
+    cursor:pointer;
+  }
+
+  .entry-fields{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:14px;
+  }
+
+  .entry-fields input, .entry-fields textarea{
+    font-size:14px;
+  }
+
+  .photo-grid{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:14px;
+  }
+
+  .photo-thumb{
+    position:relative;
+    width:90px;
+    height:90px;
+    background:repeating-linear-gradient(115deg, #f7f0f0 0 2px, #efe4e4 2px 4px);
+    border:1px solid #eee2e2;
+  }
+
+  .photo-thumb img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+  }
+
+  .photo-thumb .remove-photo{
+    position:absolute;
+    top:2px;
+    right:2px;
+    width:20px;
+    height:20px;
+    line-height:18px;
+    text-align:center;
+    background:#6e1414;
+    color:#f5efe6;
+    border:none;
+    font-size:13px;
+    cursor:pointer;
+    padding:0;
+  }
+
+  .entry-actions{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+
+  .file-input-label{
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:#9a8080;
+  }
+
+  .aspect-select{
+    width:auto;
+    font-size:12px;
+    padding:4px;
+  }
+
+  .empty-note{
+    font-size:12px;
+    letter-spacing:0.06em;
+    color:#9a8080;
+  }
+
+  [hidden]{ display:none !important; }
+</style>
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="loginScreen" class="login-wrap">
+    <h1>Admin Login</h1>
+    <form id="loginForm">
+      <label>Email
+        <input type="email" id="loginEmail" required autocomplete="username">
+      </label>
+      <label>Password
+        <input type="password" id="loginPassword" required autocomplete="current-password">
+      </label>
+      <div class="error-msg" id="loginError"></div>
+      <button type="submit" class="primary-btn">Log In</button>
+    </form>
+    <p style="margin-top:24px;"><a href="site.html" style="font-size:12px; letter-spacing:0.08em; text-transform:uppercase;">&larr; Back to site</a></p>
+  </div>
+
+  <!-- DASHBOARD (hidden until logged in) -->
+  <div id="dashboard" hidden>
+    <div class="admin-bar">
+      <a class="brand" href="site.html">Self Indulgence Design</a>
+      <div class="actions">
+        <span id="whoami" style="color:#f5efe6; font-size:12px; letter-spacing:0.06em;"></span>
+        <button id="signOutBtn">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="dash-wrap">
+      <div class="tabs">
+        <button class="tab-btn active" data-tab="modelsTab">Models</button>
+        <button class="tab-btn" data-tab="archiveTab">Archive</button>
+      </div>
+
+      <!-- MODELS TAB -->
+      <div class="tab-panel active" id="modelsTab">
+        <div class="panel-section">
+          <h2>Add a Model</h2>
+          <div class="add-card">
+            <form id="addModelForm">
+              <label>Name
+                <input type="text" id="newModelName" required>
+              </label>
+              <label>Description
+                <textarea id="newModelDescription"></textarea>
+              </label>
+              <label>Photos (optional, can add more later)
+                <input type="file" id="newModelPhotos" accept="image/*" multiple>
+              </label>
+              <div class="status-msg" id="addModelStatus"></div>
+              <button type="submit" class="primary-btn">Add Model</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>Existing Models</h2>
+          <div id="modelsList"></div>
+          <p class="empty-note" id="modelsEmptyNote" hidden>No models yet — add one above.</p>
+        </div>
+      </div>
+
+      <!-- ARCHIVE TAB -->
+      <div class="tab-panel" id="archiveTab">
+        <div class="panel-section">
+          <h2>Add Archive Photos</h2>
+          <div class="add-card">
+            <form id="addArchiveForm">
+              <label>Photos (select one or more — aspect ratio is detected automatically)
+                <input type="file" id="newArchivePhotos" accept="image/*" multiple required>
+              </label>
+              <div class="status-msg" id="addArchiveStatus"></div>
+              <button type="submit" class="primary-btn">Upload</button>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <h2>Existing Archive Photos</h2>
+          <div class="photo-grid" id="archiveGrid"></div>
+          <p class="empty-note" id="archiveEmptyNote" hidden>No archive photos yet — upload some above.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+    import {
+      getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-auth.js";
+    import {
+      getFirestore, collection, addDoc, doc, updateDoc, deleteDoc,
+      onSnapshot, query, orderBy, arrayUnion, arrayRemove
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+    import {
+      getStorage, ref, uploadBytes, getDownloadURL, deleteObject
+    } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-storage.js";
+    import { firebaseConfig } from "./firebase-config.js";
+
+    var app = initializeApp(firebaseConfig);
+    var auth = getAuth(app);
+    var db = getFirestore(app);
+    var storage = getStorage(app);
+
+    // ---------- auth ----------
+    var loginScreen = document.getElementById('loginScreen');
+    var dashboard = document.getElementById('dashboard');
+    var loginForm = document.getElementById('loginForm');
+    var loginError = document.getElementById('loginError');
+    var whoami = document.getElementById('whoami');
+
+    loginForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      loginError.textContent = '';
+      var email = document.getElementById('loginEmail').value.trim();
+      var password = document.getElementById('loginPassword').value;
+      signInWithEmailAndPassword(auth, email, password).catch(function(err){
+        loginError.textContent = 'Could not log in — check your email and password.';
+        console.error(err);
+      });
+    });
+
+    document.getElementById('signOutBtn').addEventListener('click', function(){
+      signOut(auth);
+    });
+
+    var modelsUnsub = null;
+    var archiveUnsub = null;
+
+    onAuthStateChanged(auth, function(user){
+      if (user){
+        loginScreen.hidden = true;
+        dashboard.hidden = false;
+        whoami.textContent = user.email;
+        if (!modelsUnsub) modelsUnsub = watchModels();
+        if (!archiveUnsub) archiveUnsub = watchArchive();
+      } else {
+        loginScreen.hidden = false;
+        dashboard.hidden = true;
+        if (modelsUnsub){ modelsUnsub(); modelsUnsub = null; }
+        if (archiveUnsub){ archiveUnsub(); archiveUnsub = null; }
+      }
+    });
+
+    // ---------- tabs ----------
+    document.querySelectorAll('.tab-btn').forEach(function(btn){
+      btn.addEventListener('click', function(){
+        document.querySelectorAll('.tab-btn').forEach(function(b){ b.classList.remove('active'); });
+        document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.remove('active'); });
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    // ---------- helpers ----------
+    function slugify(name){
+      return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'model';
+    }
+
+    function uploadFile(file, pathPrefix){
+      var path = pathPrefix + '/' + Date.now() + '-' + file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var fileRef = ref(storage, path);
+      return uploadBytes(fileRef, file).then(function(){
+        return getDownloadURL(fileRef);
+      }).then(function(url){
+        return { url: url, path: path };
+      });
+    }
+
+    function detectAspect(file){
+      return new Promise(function(resolve){
+        var img = new Image();
+        var objUrl = URL.createObjectURL(file);
+        img.onload = function(){
+          var ratio = img.naturalWidth / img.naturalHeight;
+          URL.revokeObjectURL(objUrl);
+          if (ratio > 1.15) resolve('aspect-wide');
+          else if (ratio < 0.87) resolve('aspect-tall');
+          else resolve('aspect-square');
+        };
+        img.onerror = function(){
+          URL.revokeObjectURL(objUrl);
+          resolve('aspect-wide');
+        };
+        img.src = objUrl;
+      });
+    }
+
+    // ================= MODELS =================
+    var modelsListEl = document.getElementById('modelsList');
+    var modelsEmptyNote = document.getElementById('modelsEmptyNote');
+    var currentModels = [];
+
+    function watchModels(){
+      var q = query(collection(db, 'models'), orderBy('order', 'asc'));
+      return onSnapshot(q, function(snap){
+        currentModels = [];
+        snap.forEach(function(docSnap){
+          currentModels.push(Object.assign({ id: docSnap.id }, docSnap.data()));
+        });
+        renderModels();
+      }, function(err){ console.error(err); });
+    }
+
+    function renderModels(){
+      modelsListEl.innerHTML = '';
+      modelsEmptyNote.hidden = currentModels.length > 0;
+
+      currentModels.forEach(function(model, index){
+        var card = document.createElement('div');
+        card.className = 'entry-card';
+
+        var head = document.createElement('div');
+        head.className = 'entry-head';
+
+        var order = document.createElement('div');
+        order.className = 'entry-order';
+        var upBtn = document.createElement('button');
+        upBtn.type = 'button'; upBtn.textContent = '\u2191';
+        upBtn.disabled = index === 0;
+        upBtn.addEventListener('click', function(){ swapModelOrder(index, index - 1); });
+        var downBtn = document.createElement('button');
+        downBtn.type = 'button'; downBtn.textContent = '\u2193';
+        downBtn.disabled = index === currentModels.length - 1;
+        downBtn.addEventListener('click', function(){ swapModelOrder(index, index + 1); });
+        order.appendChild(upBtn);
+        order.appendChild(downBtn);
+
+        var deleteBtn = document.createElement('button');
+        deleteBtn.type = 'button';
+        deleteBtn.className = 'danger-btn';
+        deleteBtn.textContent = 'Delete Model';
+        deleteBtn.addEventListener('click', function(){
+          if (confirm('Delete "' + model.name + '"? This cannot be undone.')){
+            deleteDoc(doc(db, 'models', model.id));
+          }
+        });
+
+        head.appendChild(order);
+        head.appendChild(deleteBtn);
+
+        var fields = document.createElement('div');
+        fields.className = 'entry-fields';
+
+        var nameInput = document.createElement('input');
+        nameInput.type = 'text';
+        nameInput.value = model.name || '';
+
+        var descInput = document.createElement('textarea');
+        descInput.value = model.description || '';
+
+        var saveBtn = document.createElement('button');
+        saveBtn.type = 'button';
+        saveBtn.className = 'ghost-btn';
+        saveBtn.textContent = 'Save Changes';
+        saveBtn.addEventListener('click', function(){
+          updateDoc(doc(db, 'models', model.id), {
+            name: nameInput.value.trim(),
+            description: descInput.value.trim()
+          });
+        });
+
+        fields.appendChild(nameInput);
+        fields.appendChild(descInput);
+
+        var photoGrid = document.createElement('div');
+        photoGrid.className = 'photo-grid';
+        (model.photos || []).forEach(function(photo){
+          var thumb = document.createElement('div');
+          thumb.className = 'photo-thumb';
+          var img = document.createElement('img');
+          img.src = typeof photo === 'string' ? photo : photo.url;
+          var removeBtn = document.createElement('button');
+          removeBtn.type = 'button';
+          removeBtn.className = 'remove-photo';
+          removeBtn.textContent = '\u00d7';
+          removeBtn.addEventListener('click', function(){
+            removeModelPhoto(model, photo);
+          });
+          thumb.appendChild(img);
+          thumb.appendChild(removeBtn);
+          photoGrid.appendChild(thumb);
+        });
+
+        var actions = document.createElement('div');
+        actions.className = 'entry-actions';
+        var fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.accept = 'image/*';
+        fileInput.multiple = true;
+        var addPhotosBtn = document.createElement('button');
+        addPhotosBtn.type = 'button';
+        addPhotosBtn.className = 'ghost-btn';
+        addPhotosBtn.textContent = 'Add Photos';
+        addPhotosBtn.addEventListener('click', function(){
+          if (!fileInput.files.length) return;
+          addPhotosBtn.textContent = 'Uploading\u2026';
+          var uploads = Array.from(fileInput.files).map(function(file){
+            return uploadFile(file, 'models/' + slugify(model.name));
+          });
+          Promise.all(uploads).then(function(results){
+            var urls = results.map(function(r){ return r.url; });
+            return updateDoc(doc(db, 'models', model.id), { photos: arrayUnion.apply(null, urls) });
+          }).then(function(){
+            fileInput.value = '';
+            addPhotosBtn.textContent = 'Add Photos';
+          }).catch(function(err){
+            console.error(err);
+            addPhotosBtn.textContent = 'Add Photos';
+            alert('Upload failed — see console for details.');
+          });
+        });
+
+        actions.appendChild(fileInput);
+        actions.appendChild(addPhotosBtn);
+        actions.appendChild(saveBtn);
+
+        card.appendChild(head);
+        card.appendChild(fields);
+        card.appendChild(photoGrid);
+        card.appendChild(actions);
+        modelsListEl.appendChild(card);
+      });
+    }
+
+    function removeModelPhoto(model, photoUrl){
+      updateDoc(doc(db, 'models', model.id), {
+        photos: arrayRemove(photoUrl)
+      }).catch(function(err){ console.error(err); });
+    }
+
+    function swapModelOrder(i, j){
+      var a = currentModels[i], b = currentModels[j];
+      if (!a || !b) return;
+      updateDoc(doc(db, 'models', a.id), { order: b.order });
+      updateDoc(doc(db, 'models', b.id), { order: a.order });
+    }
+
+    var addModelForm = document.getElementById('addModelForm');
+    var addModelStatus = document.getElementById('addModelStatus');
+    addModelForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var name = document.getElementById('newModelName').value.trim();
+      var description = document.getElementById('newModelDescription').value.trim();
+      var files = document.getElementById('newModelPhotos').files;
+      if (!name) return;
+
+      addModelStatus.textContent = 'Saving\u2026';
+      var nextOrder = currentModels.length
+        ? Math.max.apply(null, currentModels.map(function(m){ return m.order || 0; })) + 1
+        : 0;
+
+      var uploads = files.length
+        ? Array.from(files).map(function(file){ return uploadFile(file, 'models/' + slugify(name)); })
+        : Promise.resolve([]);
+
+      Promise.resolve(uploads).then(function(maybeArray){
+        return Array.isArray(maybeArray) ? Promise.all(maybeArray) : maybeArray;
+      }).then(function(results){
+        var urls = (results || []).map(function(r){ return r.url; });
+        return addDoc(collection(db, 'models'), {
+          name: name,
+          description: description,
+          photos: urls,
+          order: nextOrder
+        });
+      }).then(function(){
+        addModelForm.reset();
+        addModelStatus.textContent = 'Added.';
+        setTimeout(function(){ addModelStatus.textContent = ''; }, 2000);
+      }).catch(function(err){
+        console.error(err);
+        addModelStatus.textContent = 'Something went wrong — see console.';
+      });
+    });
+
+    // ================= ARCHIVE =================
+    var archiveGrid = document.getElementById('archiveGrid');
+    var archiveEmptyNote = document.getElementById('archiveEmptyNote');
+    var currentArchive = [];
+
+    function watchArchive(){
+      var q = query(collection(db, 'archivePhotos'), orderBy('order', 'asc'));
+      return onSnapshot(q, function(snap){
+        currentArchive = [];
+        snap.forEach(function(docSnap){
+          currentArchive.push(Object.assign({ id: docSnap.id }, docSnap.data()));
+        });
+        renderArchive();
+      }, function(err){ console.error(err); });
+    }
+
+    function renderArchive(){
+      archiveGrid.innerHTML = '';
+      archiveEmptyNote.hidden = currentArchive.length > 0;
+
+      currentArchive.forEach(function(photo, index){
+        var wrap = document.createElement('div');
+        wrap.style.display = 'flex';
+        wrap.style.flexDirection = 'column';
+        wrap.style.gap = '4px';
+
+        var thumb = document.createElement('div');
+        thumb.className = 'photo-thumb';
+        var img = document.createElement('img');
+        img.src = photo.src;
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-photo';
+        removeBtn.textContent = '\u00d7';
+        removeBtn.addEventListener('click', function(){
+          if (confirm('Delete this photo?')){
+            deleteDoc(doc(db, 'archivePhotos', photo.id));
+          }
+        });
+        thumb.appendChild(img);
+        thumb.appendChild(removeBtn);
+
+        var aspectSelect = document.createElement('select');
+        aspectSelect.className = 'aspect-select';
+        ['aspect-tall', 'aspect-wide', 'aspect-square'].forEach(function(opt){
+          var o = document.createElement('option');
+          o.value = opt;
+          o.textContent = opt.replace('aspect-', '');
+          if (photo.aspect === opt) o.selected = true;
+          aspectSelect.appendChild(o);
+        });
+        aspectSelect.addEventListener('change', function(){
+          updateDoc(doc(db, 'archivePhotos', photo.id), { aspect: aspectSelect.value });
+        });
+
+        var orderRow = document.createElement('div');
+        orderRow.style.display = 'flex';
+        orderRow.style.gap = '4px';
+        var upBtn = document.createElement('button');
+        upBtn.type = 'button'; upBtn.className = 'ghost-btn'; upBtn.textContent = '\u2191';
+        upBtn.style.padding = '2px 6px'; upBtn.style.fontSize = '11px';
+        upBtn.disabled = index === 0;
+        upBtn.addEventListener('click', function(){ swapArchiveOrder(index, index - 1); });
+        var downBtn = document.createElement('button');
+        downBtn.type = 'button'; downBtn.className = 'ghost-btn'; downBtn.textContent = '\u2193';
+        downBtn.style.padding = '2px 6px'; downBtn.style.fontSize = '11px';
+        downBtn.disabled = index === currentArchive.length - 1;
+        downBtn.addEventListener('click', function(){ swapArchiveOrder(index, index + 1); });
+        orderRow.appendChild(upBtn);
+        orderRow.appendChild(downBtn);
+
+        wrap.appendChild(thumb);
+        wrap.appendChild(aspectSelect);
+        wrap.appendChild(orderRow);
+        archiveGrid.appendChild(wrap);
+      });
+    }
+
+    function swapArchiveOrder(i, j){
+      var a = currentArchive[i], b = currentArchive[j];
+      if (!a || !b) return;
+      updateDoc(doc(db, 'archivePhotos', a.id), { order: b.order });
+      updateDoc(doc(db, 'archivePhotos', b.id), { order: a.order });
+    }
+
+    var addArchiveForm = document.getElementById('addArchiveForm');
+    var addArchiveStatus = document.getElementById('addArchiveStatus');
+    addArchiveForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var files = document.getElementById('newArchivePhotos').files;
+      if (!files.length) return;
+
+      addArchiveStatus.textContent = 'Uploading\u2026';
+      var nextOrder = currentArchive.length
+        ? Math.max.apply(null, currentArchive.map(function(p){ return p.order || 0; })) + 1
+        : 0;
+
+      var jobs = Array.from(files).map(function(file, i){
+        return Promise.all([uploadFile(file, 'archive'), detectAspect(file)]).then(function(res){
+          return addDoc(collection(db, 'archivePhotos'), {
+            src: res[0].url,
+            aspect: res[1],
+            order: nextOrder + i
+          });
+        });
+      });
+
+      Promise.all(jobs).then(function(){
+        addArchiveForm.reset();
+        addArchiveStatus.textContent = 'Uploaded.';
+        setTimeout(function(){ addArchiveStatus.textContent = ''; }, 2000);
+      }).catch(function(err){
+        console.error(err);
+        addArchiveStatus.textContent = 'Something went wrong — see console.';
+      });
+    });
+  </script>
+</body>
+</html>
